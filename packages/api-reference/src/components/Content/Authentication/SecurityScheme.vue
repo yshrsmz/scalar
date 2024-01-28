@@ -102,12 +102,32 @@ const oauth2SelectedScopes = computed<string[]>({
 
 const startAuthentication = (url: string) => {
   const windowFeatures = 'left=100,top=100,width=800,height=600'
-  const handle = window.open(url, 'openAuth2Window', windowFeatures)
+  const authWindow = window.open(url, 'openAuth2Window', windowFeatures)
 
-  if (!handle) {
+  console.log(authWindow)
+
+  if (!authWindow) {
     // The window wasn't allowed to open
     // This is likely caused by built-in popup blockers.
     // …
+  } else {
+    console.log('here')
+    // The window was allowed to open
+    const checkWindowClosed = setInterval(function () {
+      const urlParams = new URLSearchParams(authWindow.location.href)
+      const accessToken = urlParams.get('access_token')
+      if (authWindow.closed || accessToken) {
+        clearInterval(checkWindowClosed)
+        console.log(accessToken)
+        console.log('Child window closed')
+        console.log(authWindow)
+        authWindow.close()
+      }
+    }, 125) // Check every 500 milliseconds
+
+    // authWindow.addEventListener('beforeunload', function (e) {
+    //   console.log('onclose', e)
+    // })
   }
 }
 </script>
