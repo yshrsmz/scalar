@@ -1,3 +1,4 @@
+import { ProxyHeader } from '@scalar/api-client-proxy'
 import axios, { type AxiosRequestConfig } from 'axios'
 import { nanoid } from 'nanoid'
 
@@ -108,6 +109,7 @@ export async function sendRequest(
         method: 'POST',
         url: proxyUrl,
         data: requestConfig,
+        responseType: 'blob',
       }
     : {
         method: requestConfig.method,
@@ -131,18 +133,23 @@ export async function sendRequest(
 
   const response: ClientResponse = await axios(axiosRequestConfig)
     .then(async (result) => {
-      // With proxy
-      if (proxyUrl) {
-        return {
-          // Result is a string via the proxy
-          ...result.data,
-          error: false,
-        }
-      }
+      console.log(result.headers)
 
-      // Result is a blob without the proxy
+      // Result is always blob
       const blob = result.data as Blob
       const data = blob.type === 'application/json' ? await blob.text() : blob
+
+      // With Proxy
+      if (proxyUrl)
+        return {
+          ...result,
+          data,
+          // Pull proxied info out of the headers
+          statusCode: result.headers[ProxyHeader.StatusCode],
+          statusText: result.headers[ProxyHeader.StatusText],
+          error: false,
+        }
+
       // Without proxy
       return {
         ...result,

@@ -27,7 +27,8 @@
   "types": "dist/src/index.d.ts",
   "exports": {
     "import": "./dist/index.js",
-    "require": "./dist/index.cjs"
+    "require": "./dist/index.cjs",
+    "soup": "./dist/src/types.d.ts"
   },
   "files": [
     "dist",
