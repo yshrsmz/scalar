@@ -1,4 +1,8 @@
-import { type OpenAPIV3 } from '@scalar/openapi-parser'
+import {
+  type OpenAPIV2,
+  type OpenAPIV3,
+  type OpenAPIV3_1,
+} from '@scalar/openapi-parser'
 import type { HarRequest } from 'httpsnippet-lite'
 
 export type AnyObject = Record<string, any>
@@ -129,3 +133,63 @@ export type Schema = {
 export type TransformedOperation = Operation & {
   pathParameters?: Parameters[]
 }
+
+/* Scalar Parse ---------------------------------------------------------------------------- */
+
+export type Spec = {
+  'tags'?: Tag[]
+  'info':
+    | Partial<OpenAPIV2.Document['info']>
+    | Partial<OpenAPIV3.Document['info']>
+    | Partial<OpenAPIV3_1.Document['info']>
+  'host'?: OpenAPIV2.Document['host']
+  'basePath'?: OpenAPIV2.Document['basePath']
+  'schemes'?: OpenAPIV2.Document['schemes']
+  'externalDocs'?: ExternalDocs
+  'servers'?: Server[]
+  'components'?: OpenAPIV3.ComponentsObject | OpenAPIV3_1.ComponentsObject
+  'webhooks'?: Webhooks
+  'definitions'?: Definitions
+  'swagger'?: OpenAPIV2.Document['swagger']
+  'openapi'?: OpenAPIV3.Document['openapi'] | OpenAPIV3_1.Document['openapi']
+  'x-tagGroups'?: TagGroup[]
+  'security'?: OpenAPIV3.SecurityRequirementObject[]
+}
+
+export type Definitions = OpenAPIV2.DefinitionsObject
+
+export type Tag = {
+  name: string
+  description: string
+  operations: TransformedOperation[]
+}
+
+export type ExternalDocs = {
+  description: string
+  url: string
+}
+
+export type ServerVariables = Record<
+  string,
+  {
+    default?: string | number
+    description?: string
+    enum?: (string | number)[]
+  }
+>
+
+export type Server = {
+  url: string
+  description?: string
+  variables?: ServerVariables
+}
+
+export type TagGroup = {
+  name: string
+  tags: string[]
+}
+
+export type Webhooks = Record<
+  string,
+  Record<OpenAPIV3_1.HttpMethods, TransformedOperation>
+>
