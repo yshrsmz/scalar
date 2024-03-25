@@ -6,8 +6,7 @@ import {
   openapi,
 } from '@scalar/openapi-parser'
 
-// AnyStringOrObject
-import type { Spec } from './types'
+import { type RequestMethod, type Spec, validRequestMethods } from './types'
 
 // input: standard spec type
 // output: spec with all fields optional to accept malformed specs
@@ -16,19 +15,6 @@ import type { Spec } from './types'
  * Unfortunately, this file is very messy. I think we should get rid of it entirely. :)
  * TODO: Slowly remove all the transformed properties and use the raw output of @scalar/openapi-parser instead.
  */
-export const validRequestMethods = [
-  'GET',
-  'POST',
-  'PUT',
-  'HEAD',
-  'DELETE',
-  'PATCH',
-  'OPTIONS',
-  'CONNECT',
-  'TRACE',
-] as const
-
-export type RequestMethod = (typeof validRequestMethods)[number]
 
 export const scalarParse = (specification: any): Promise<Spec> => {
   // eslint-disable-next-line no-async-promise-executor

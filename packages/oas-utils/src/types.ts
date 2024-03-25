@@ -193,3 +193,17 @@ export type Webhooks = Record<
   string,
   Record<OpenAPIV3_1.HttpMethods, TransformedOperation>
 >
+
+export const validRequestMethods = [
+  'GET',
+  'POST',
+  'PUT',
+  'HEAD',
+  'DELETE',
+  'PATCH',
+  'OPTIONS',
+  'CONNECT',
+  'TRACE',
+] as const
+
+export type RequestMethod = (typeof validRequestMethods)[number]
