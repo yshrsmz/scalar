@@ -10,6 +10,7 @@ import content from '../fixtures/petstorev3.json'
 
 const configuration = reactive<ReferenceConfiguration>({
   proxy: import.meta.env.VITE_REQUEST_PROXY_URL,
+  theme: 'bluePlanet',
   isEditable: false,
   spec: { content },
 })
@@ -19,3 +20,8 @@ const configuration = reactive<ReferenceConfiguration>({
     <template #footer><SlotPlaceholder>footer</SlotPlaceholder></template>
   </ApiReference>
 </template>
+<style>
+:root {
+  --default-theme-background-1: red;
+}
+</style>

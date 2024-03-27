@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-  ResetStyles,
-  ScrollbarStyles,
-  type ThemeId,
-  ThemeStyles,
-} from '@scalar/themes'
+import { ResetStyles, ScrollbarStyles, type ThemeId } from '@scalar/themes'
 import { useDebounceFn, useMediaQuery, useResizeObserver } from '@vueuse/core'
 import { computed, onMounted, provide, ref } from 'vue'
 import { toast } from 'vue-sonner'
@@ -15,6 +10,7 @@ import {
   downloadSpecFile,
 } from '../helpers'
 import { useNavState, useSidebar } from '../hooks'
+import { useStyles } from '../hooks/useStyles'
 import { useToasts } from '../hooks/useToasts'
 import type {
   ReferenceLayoutProps,
@@ -36,6 +32,8 @@ defineEmits<{
   (e: 'linkSwaggerFile'): void
   (e: 'toggleDarkMode'): void
 }>()
+
+useStyles({ theme: props.configuration.theme })
 
 defineOptions({
   inheritAttrs: false,
@@ -114,7 +112,6 @@ const referenceSlotProps = computed<ReferenceSlotProps>(() => ({
 provide(GLOBAL_SECURITY_SYMBOL, () => props.parsedSpec.security)
 </script>
 <template>
-  <ThemeStyles :id="configuration?.theme" />
   <ResetStyles v-slot="{ styles: reset }">
     <ScrollbarStyles v-slot="{ styles: scrollbars }">
       <div

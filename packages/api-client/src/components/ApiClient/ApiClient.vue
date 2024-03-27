@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-import { type ThemeId, ThemeStyles } from '@scalar/themes'
+import { type ThemeId } from '@scalar/themes'
 import { useMagicKeys, useMediaQuery, whenever } from '@vueuse/core'
 import { ref, watch } from 'vue'
 
@@ -14,6 +14,7 @@ const props = withDefaults(
   defineProps<{
     proxyUrl?: string
     readOnly?: boolean
+    // eslint-disable-next-line vue/no-unused-properties
     theme?: ThemeId
   }>(),
   {
@@ -53,7 +54,6 @@ watch(
 </script>
 
 <template>
-  <ThemeStyles :id="theme" />
   <HttpMethod
     class="scalar-api-client"
     :method="activeRequest.type ?? 'get'"

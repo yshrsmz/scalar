@@ -10,6 +10,9 @@ import saturnTheme from './presets/saturn.css?inline'
 import solarizedTheme from './presets/solarized.css?inline'
 
 /** A component to insert the theme styles */
+export { default as baseStyles } from './base.css?inline'
+
+/** A component to insert the theme styles */
 export { default as ThemeStyles } from './components/ThemeStyles.vue'
 
 /** A scoped style reset component. */
