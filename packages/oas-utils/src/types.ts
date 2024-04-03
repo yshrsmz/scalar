@@ -134,7 +134,18 @@ export type TransformedOperation = Operation & {
   pathParameters?: Parameters[]
 }
 
-/* Scalar Parse ---------------------------------------------------------------------------- */
+export type DeepPartial<T> =
+  T extends Array<infer InferredArrayMemeber>
+    ? DeepPartialArray<InferredArrayMemeber>
+    : T extends object
+      ? DeepPartialObject<T>
+      : T | undefined
+
+type DeepPartialArray<T> = T & Array<DeepPartial<T>>
+
+type DeepPartialObject<T> = {
+  [Key in keyof T]?: DeepPartial<T[Key]>
+}
 
 export type Spec = {
   'tags'?: Tag[]
@@ -207,3 +218,5 @@ export const validRequestMethods = [
 ] as const
 
 export type RequestMethod = (typeof validRequestMethods)[number]
+
+export type RemoveUndefined<TType> = TType extends undefined ? never : TType
