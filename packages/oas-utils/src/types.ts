@@ -169,10 +169,21 @@ export type Spec = {
 
 export type Definitions = OpenAPIV2.DefinitionsObject
 
+// TODO: resolve these tag types
 export type Tag = {
   name: string
   description: string
   operations: TransformedOperation[]
+}
+
+export type TagObject = {
+  name: string
+  description?: string
+  externalDocs?: ExternalDocs
+}
+
+export type ScalarTagObject = TagObject & {
+  operations: Operation[]
 }
 
 export type ExternalDocs = {

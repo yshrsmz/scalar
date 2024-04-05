@@ -70,6 +70,33 @@ describe('Translates open api spec to data object for rendering', () => {
       'Overriding description',
     )
   })
+  test('Parse openapi spec with tags', async () => {
+    // const result = await openapi().load(specification).resolve()
+    const result = await openapi().load(mega).resolve()
+
+    // console.log(JSON.stringify(result, null, 2))
+
+    expect(result.valid).toBe(true)
+    expect(result.version).toBe('3.1')
+    expect(result.schema).toBeDefined()
+    expect(result.errors).toBeUndefined()
+    expect(result.specification).toBeDefined()
+
+    if (result.schema === undefined) {
+      throw 'Failed to parse the OpenAPI file.'
+    }
+
+    const schema: ResolvedOpenAPI.Document = result.schema
+
+    const transformed = transformResult(structuredClone(schema))
+
+    console.log(JSON.stringify(transformed, null, 2))
+
+    // @ts-ignore
+    expect(transformed.webhooks?.myWebhook?.description?.description).toEqual(
+      'Overriding description',
+    )
+  })
   test.skip('Parse openapi 2 spec', async () => {
     const specification = {
       openapi: '2.0.0',

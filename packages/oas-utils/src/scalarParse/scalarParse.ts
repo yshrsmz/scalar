@@ -31,7 +31,7 @@ export const addTagsToSchema = <T extends ResolvedOpenAPI.Document>(
   } else
     return {
       ...schema,
-      tags: {} as ResolvedOpenAPI.Document['tags'],
+      tags: [] as ResolvedOpenAPI.Document['tags'],
     }
 }
 
@@ -170,8 +170,9 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
       return Object.keys(obj) as (keyof Obj)[]
     }
 
-    // TODO: check that requestMethod is a valid request method - use extract keys ??
+    // for each path, format operation data and add tags or create default tag
     objectKeys(scalarSchema.paths[path]).forEach((requestMethod) => {
+      // TODO: check that requestMethod is a valid request method - use extract keys ??
       if (
         validRequestMethods.includes(
           requestMethod.toUpperCase() as RequestMethod,
@@ -198,25 +199,32 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
         if (!operation.tags || operation.tags.length === 0) {
           // Create the default tag.
           if (
-            !scalarSchema.tags?.find(
+            !scalarSchema?.tags?.find(
               (
-                tag: OpenAPIV2.TagObject | OpenAPIV3.TagObject, // TODO: what about 3.1?
+                tag:
+                  | OpenAPIV2.TagObject
+                  | OpenAPIV3.TagObject
+                  | OpenAPIV3_1.TagObject,
               ) => tag.name === 'default',
             )
           ) {
             scalarSchema.tags?.push({
               name: 'default',
               description: '',
-              operations: [],
+              operations: [], // TODO: add to type definition
             })
           }
 
           // find the index of the default tag
-          const indexOfDefaultTag = scalarSchema.tags?.findIndex(
-            (
-              tag: OpenAPIV2.TagObject | OpenAPIV3.TagObject, // TODO: what about 3.1?
-            ) => tag.name === 'default',
-          )
+          const indexOfDefaultTag =
+            scalarSchema.tags?.findIndex(
+              (
+                tag:
+                  | OpenAPIV2.TagObject
+                  | OpenAPIV3.TagObject
+                  | OpenAPIV3_1.TagObject,
+              ) => tag.name === 'default',
+            ) ?? -1
 
           // Add the new operation to the default tag.
           if (indexOfDefaultTag >= 0) {
@@ -273,6 +281,6 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
 const removeTagsWithoutOperations = (spec: Spec) => {
   return {
     ...spec,
-    tags: spec.tags?.filter((tag) => tag.operations?.length > 0),
+    tags: spec.tags?.filter((tag) => tag.operations?.length > 0), // TODO: spec.tags?.filter is not a function
   }
 }
