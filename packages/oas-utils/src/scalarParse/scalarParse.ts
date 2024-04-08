@@ -8,29 +8,55 @@ import {
 } from '@scalar/openapi-parser'
 
 import {
-  type DeepPartial,
+  type Operation,
   type RemoveUndefined,
   type RequestMethod,
   type Spec,
   type Tag,
+  objectKeys,
   validRequestMethods,
 } from '../types'
 
-// TODO: more descriptive name
+// TODO: docstring
+// TODO: does this need to be a promise?
+export const scalarParse = (specification: any): Promise<Spec> => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await openapi().load(specification).resolve()
+
+      if (result.schema === undefined) {
+        throw 'Failed to parse the OpenAPI file.'
+      }
+
+      if (result.errors?.length) {
+        console.warn(
+          'Please open an issue on https://github.com/scalar/scalar\n',
+          'Scalar OpenAPI Parser Warning:\n',
+          result.errors,
+        )
+      }
+
+      const schema: ResolvedOpenAPI.Document = result.schema
+      resolve(transformResult(structuredClone(schema)))
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 /** Transform a resolved OpenAPI spec from the OpenAPI Parser for better rendering */
 export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
   schema: TSpec,
-): DeepPartial<Spec> => {
-  // Validate or instantiate required properties
+): Spec => {
+  // Validate or instantiate required properties (tags, paths, webhooks)
   const scalarSchema = addSchemaProperties(schema)
 
-  const newWebhooks = transformWebhooks(scalarSchema, scalarSchema.webhooks)
-
-  // TODO: move this outside - make arrow function?
+  /** transform the paths, also updates the above scoped scalarSchema tags  */
   function transformPath(
     requestMethod: string,
     path: string,
-    operation: ResolvedOpenAPI.Operation,
+    operation: Operation,
   ) {
     // Transform the operation
     const newOperation = {
@@ -42,7 +68,7 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
       information: {
         ...operation,
       },
-      pathParameters: schema.paths?.[path]?.parameters,
+      pathParameters: scalarSchema.paths?.[path]?.parameters,
     }
 
     // If the operation has no tags, add operation to the default tag
@@ -88,6 +114,17 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
           scalarSchema.tags[tagIndex].operations = []
         }
 
+        /** type newOperation
+          const newOperation: {
+            httpVerb: string;
+            path: string;
+            operationId: any;
+            name: any;
+            description: any;
+            information: any;
+            pathParameters: ResolvedOpenAPIV3.ParameterObject[] | ResolvedOpenAPIV2.Parameters | undefined;
+          };
+         */
         // Add the new operation
         scalarSchema.tags[tagIndex].operations.push(newOperation)
       })
@@ -98,12 +135,6 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
 
   /** Transform request methods, operations, tags */
   Object.keys(scalarSchema.paths).forEach((path: string) => {
-    // TODO: move this to utils?
-    // Object keys type helper
-    const objectKeys = <Obj extends object>(obj: Obj): (keyof Obj)[] => {
-      return Object.keys(obj) as (keyof Obj)[]
-    }
-
     // for each path, format operation data and add operations to tags
     objectKeys(scalarSchema.paths[path]).forEach((requestMethod) => {
       if (
@@ -111,28 +142,11 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
           requestMethod.toUpperCase() as RequestMethod,
         )
       ) {
-        const operation = scalarSchema.paths[path][
-          requestMethod
-        ] as ResolvedOpenAPI.Operation
+        const operation = scalarSchema.paths[path][requestMethod]
 
         const transformedPath = transformPath(requestMethod, path, operation)
 
         // TODO: path types are a little wonky
-        /**
-         *     "paths": Object {
-                "/": Object {
-                  "get": Object {
-          +         "description": "",
-          +         "httpVerb": "get",
-          +         "information": Object {
-                      "parameters": Array [],
-          +         },
-          +         "name": "/",
-          +         "operationId": "/",
-          +         "path": "/",
-          +         "pathParameters": undefined,
-                  },
-         */
         scalarSchema.paths[path][requestMethod] = transformedPath
       }
     })
@@ -140,11 +154,30 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
 
   const returnedResult = {
     ...scalarSchema,
-    webhooks: newWebhooks,
-    tags: scalarSchema.tags.filter((tag) => tag.operations?.length > 0),
+    tags: removeTagsWithoutOperations(scalarSchema),
   }
   return returnedResult
 }
+
+/**
+ * Validate or instantiate required scalar schema properties (tags, paths, webhooks)
+ * @param schema
+ * @returns
+ */
+export const addSchemaProperties = <T extends ResolvedOpenAPI.Document>(
+  schema: T,
+) => {
+  const newSchema = addTagsToSchema(
+    addWebhooksToSchema(addPathsToSchema(schema)),
+  )
+  const newWebhooks = transformWebhooks(newSchema, newSchema.webhooks)
+
+  return {
+    ...newSchema,
+    webhooks: newWebhooks,
+  }
+}
+
 /** Returns a formatted list of Tag objects for the schema */
 export const initTags = <T extends ResolvedOpenAPI.Document>(schema: T) => {
   const defaultTag = {
@@ -176,8 +209,6 @@ export const addTagsToSchema = <T extends ResolvedOpenAPI.Document>(
   schema: T,
 ) => {
   const tags = initTags(schema)
-  delete schema.tags
-
   return {
     ...schema,
     tags,
@@ -195,13 +226,10 @@ export const addPathsToSchema = <T extends ResolvedOpenAPI.Document>(
   ) {
     const paths = schema.paths as Record<
       string,
-      // TODO: is this type necessary?
-      | RemoveUndefined<ResolvedOpenAPIV2.PathItemObject>
-      | RemoveUndefined<ResolvedOpenAPIV3.PathItemObject>
-      | RemoveUndefined<ResolvedOpenAPIV3_1.PathItemObject>
+      | ResolvedOpenAPIV3_1.PathItemObject
+      | ResolvedOpenAPIV2.PathItemObject
+      | ResolvedOpenAPIV3.PathItemObject
     >
-
-    delete schema.paths
     return {
       ...schema,
       paths: paths,
@@ -211,10 +239,9 @@ export const addPathsToSchema = <T extends ResolvedOpenAPI.Document>(
       ...schema,
       paths: {} as Record<
         string,
-        // TODO: is this type necessary?
-        | RemoveUndefined<ResolvedOpenAPIV2.PathItemObject>
-        | RemoveUndefined<ResolvedOpenAPIV3.PathItemObject>
-        | RemoveUndefined<ResolvedOpenAPIV3_1.PathItemObject>
+        | ResolvedOpenAPIV3_1.PathItemObject
+        | ResolvedOpenAPIV2.PathItemObject
+        | ResolvedOpenAPIV3.PathItemObject
       >,
     }
 }
@@ -232,7 +259,7 @@ export const addWebhooksToSchema = <T extends ResolvedOpenAPI.Document>(
       string,
       ResolvedOpenAPIV3_1.PathItemObject
     >
-    delete schema.webhooks
+
     return {
       ...schema,
       webhooks: webhooks,
@@ -242,16 +269,6 @@ export const addWebhooksToSchema = <T extends ResolvedOpenAPI.Document>(
       ...schema,
       webhooks: {} as Record<string, ResolvedOpenAPIV3_1.PathItemObject>,
     }
-}
-
-export const addSchemaProperties = <T extends ResolvedOpenAPI.Document>(
-  schema: T,
-) => {
-  const pathSchema = addPathsToSchema(schema)
-  const webhooksSchema = addWebhooksToSchema(pathSchema)
-  const tagSchema = addTagsToSchema(webhooksSchema)
-
-  return tagSchema
 }
 
 /** Transform webhooks data - Return a new webhooks object with the transformed data */
@@ -280,8 +297,9 @@ export const transformWebhooks = <T extends ResolvedOpenAPI.Document>(
           operationId: originalWebhook?.operationId || name,
           name: originalWebhook?.summary || name || '',
           description: originalWebhook?.description || '',
-          pathParameters: schema.paths?.[name]?.parameters, // TODO: what if undefined
+          pathParameters: schema.paths?.[name]?.parameters,
           // Original webhook
+          // TODO: This needs fixing
           information: {
             ...originalWebhook,
           },

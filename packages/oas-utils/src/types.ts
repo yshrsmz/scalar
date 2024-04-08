@@ -71,7 +71,7 @@ export type Information = {
 }
 
 export type Operation = {
-  httpVerb: string
+  httpVerb: string // TODO: set this to RequestMethod?
   path: string
   operationId?: string
   name?: string
@@ -150,13 +150,13 @@ type DeepPartialObject<T> = {
 export type Spec = {
   'tags'?: Tag[]
   'info':
-    | Partial<OpenAPIV2.Document['info']>
-    | Partial<OpenAPIV3.Document['info']>
-    | Partial<OpenAPIV3_1.Document['info']>
+    | DeepPartial<OpenAPIV2.Document['info']>
+    | DeepPartial<OpenAPIV3.Document['info']>
+    | DeepPartial<OpenAPIV3_1.Document['info']>
   'host'?: OpenAPIV2.Document['host']
   'basePath'?: OpenAPIV2.Document['basePath']
   'schemes'?: OpenAPIV2.Document['schemes']
-  'externalDocs'?: ExternalDocs
+  'externalDocs'?: Partial<ExternalDocs>
   'servers'?: Server[]
   'components'?: OpenAPIV3.ComponentsObject | OpenAPIV3_1.ComponentsObject
   'webhooks'?: Webhooks
@@ -169,7 +169,6 @@ export type Spec = {
 
 export type Definitions = OpenAPIV2.DefinitionsObject
 
-// TODO: resolve these tag types
 export type Tag = {
   name: string
   description: string
@@ -222,3 +221,8 @@ export const validRequestMethods = [
 export type RequestMethod = (typeof validRequestMethods)[number]
 
 export type RemoveUndefined<TType> = TType extends undefined ? never : TType
+
+// Object keys type helper
+export const objectKeys = <Obj extends object>(obj: Obj): (keyof Obj)[] => {
+  return Object.keys(obj) as (keyof Obj)[]
+}

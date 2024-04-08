@@ -37,9 +37,6 @@ describe('Translates open api spec to data object for rendering', () => {
       throw 'Failed to parse the OpenAPI file.'
     }
 
-    // Check the version that openapi parser returns and return the type based on that?
-
-    // Spec is the output type so we probably don't want to use that??
     const schema: ResolvedOpenAPI.Document = result.schema
 
     const transformed = transformResult(structuredClone(schema))
@@ -53,7 +50,7 @@ describe('Translates open api spec to data object for rendering', () => {
   })
   test('Parse openapi 3.1 spec with webhooks', async () => {
     const result = await openapi().load(mega).resolve()
-
+    console.log(JSON.stringify(result, null, 2))
     expect(result.valid).toBe(true)
     expect(result.version).toBe('3.1')
     expect(result.schema).toBeDefined()
@@ -79,7 +76,7 @@ describe('Translates open api spec to data object for rendering', () => {
       'Overriding description',
     )
   })
-  test.skip('Parse openapi spec with tags', async () => {
+  test('Parse openapi spec with tags', async () => {
     // TODO: render it???
     // const result = await openapi().load(specification).resolve()
     const result = await openapi().load(mega).resolve()
@@ -107,7 +104,7 @@ describe('Translates open api spec to data object for rendering', () => {
       'Overriding description',
     )
   })
-  test.skip('Parse openapi 2 spec', async () => {
+  test('Parse openapi 2 spec', async () => {
     const specification = {
       openapi: '2.0.0',
       info: { title: 'Example' },
