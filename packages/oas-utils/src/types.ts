@@ -173,17 +173,8 @@ export type Definitions = OpenAPIV2.DefinitionsObject
 export type Tag = {
   name: string
   description: string
-  operations: TransformedOperation[]
-}
-
-export type TagObject = {
-  name: string
-  description?: string
   externalDocs?: ExternalDocs
-}
-
-export type ScalarTagObject = TagObject & {
-  operations: Operation[]
+  operations: TransformedOperation[]
 }
 
 export type ExternalDocs = {
