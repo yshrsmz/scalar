@@ -241,7 +241,7 @@ export const transformedOperationSchema = OperationSchema.extend({
 })
 
 export type Spec = {
-  'tags'?: Tag[]
+  'tags'?: z.infer<typeof tagSchema>[]
   'info':
     | Partial<OpenAPIV2.Document['info']>
     | Partial<OpenAPIV3.Document['info']>
