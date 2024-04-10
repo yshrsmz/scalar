@@ -4,23 +4,9 @@ import {
   type OpenAPIV3_1,
 } from '@scalar/openapi-parser'
 import type { HarRequest } from 'httpsnippet-lite'
+import { describe } from 'node:test'
+import { deprecate } from 'node:util'
 import { z } from 'zod'
-
-export const validRequestMethods = [
-  'GET',
-  'POST',
-  'PUT',
-  'HEAD',
-  'DELETE',
-  'PATCH',
-  'OPTIONS',
-  'CONNECT',
-  'TRACE',
-] as const
-
-export type RequestMethod = (typeof validRequestMethods)[number]
-
-export const RequestMethodSchema = z.enum(validRequestMethods)
 
 export type AnyObject = Record<string, any>
 
@@ -88,25 +74,13 @@ export type Information = {
 }
 
 export type Operation = {
-  httpVerb: RequestMethod
-
+  httpVerb: string
+  path: string
   operationId?: string
   name?: string
   description?: string
   information?: Information
-  summary?: string
-  tags?: string[]
 }
-
-export const OperationSchema = z.object({
-  httpVerb: RequestMethodSchema.optional(),
-  operationId: z.string().optional(),
-  name: z.string().optional(),
-  description: z.string().optional(),
-  information: z.record(z.any(), z.any()).optional(),
-  summary: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-})
 export type Parameters = {
   // Fixed Fields
   name: string
@@ -163,30 +137,119 @@ export type TransformedOperation = Operation & {
   pathParameters?: Parameters[]
 }
 
-export type DeepPartial<T> =
-  T extends Array<infer InferredArrayMemeber>
-    ? DeepPartialArray<InferredArrayMemeber>
-    : T extends object
-      ? DeepPartialObject<T>
-      : T | undefined
+export type CollapsedSidebarItems = Record<string, boolean>
 
-type DeepPartialArray<T> = T & Array<DeepPartial<T>>
-
-type DeepPartialObject<T> = {
-  [Key in keyof T]?: DeepPartial<T[Key]>
+export type AuthenticationState = {
+  customSecurity: boolean
+  preferredSecurityScheme: string | null
+  securitySchemes?:
+    | OpenAPIV3.ComponentsObject['securitySchemes']
+    | OpenAPIV3_1.ComponentsObject['securitySchemes']
+  http: {
+    basic: {
+      username: string
+      password: string
+    }
+    bearer: {
+      token: string
+    }
+  }
+  apiKey: {
+    token: string
+  }
+  oAuth2: {
+    clientId: string
+    scopes: string[]
+    accessToken: string
+    state: string
+  }
 }
+
+export type Heading = {
+  depth: number
+  value: string
+  slug?: string
+}
+
+export type CodeBlockSSRKey = `components-scalar-code-block${number}`
+export type DescriptionSectionSSRKey =
+  `components-Content-Introduction-Description-sections${number}`
+export type ExampleRequestSSRKey =
+  `components-Content-Operation-Example-Request${number}`
+
+export type ScalarState = {
+  'hash'?: string
+  'useGlobalStore-authentication'?: AuthenticationState
+  'useSidebarContent-collapsedSidebarItems'?: CollapsedSidebarItems
+  [key: CodeBlockSSRKey]: string
+  [key: DescriptionSectionSSRKey]: {
+    heading: Heading
+    content: string
+  }[]
+  [key: ExampleRequestSSRKey]: string
+}
+
+export type SSRState = {
+  payload: {
+    data: ScalarState
+  }
+  url: string
+}
+
+export const validRequestMethods = [
+  'GET',
+  'POST',
+  'PUT',
+  'HEAD',
+  'DELETE',
+  'PATCH',
+  'OPTIONS',
+  'CONNECT',
+  'TRACE',
+] as const
+
+export type RequestMethod = (typeof validRequestMethods)[number]
+
+export const requestMethodSchema = z.enum(validRequestMethods)
+
+export const OperationSchema = z.object({
+  httpVerb: requestMethodSchema.optional(),
+  operationId: z.string().optional(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  information: z.record(z.any(), z.any()).optional(),
+  summary: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+})
+
+export const parameterSchema = z.object({
+  name: z.string(),
+  in: z.string().optional(),
+  description: z.string().optional(),
+  required: z.boolean().optional(),
+  allowEmptyValue: z.boolean().optional(),
+  style: z.enum(['form', 'simple']).optional(),
+  explode: z.boolean().optional(),
+  allowReserved: z.boolean().optional(),
+  schema: z.record(z.any(), z.any()).optional(),
+  example: z.any().optional(),
+  examples: z.record(z.string(), z.any()).optional(),
+})
+
+export const transformedOperationSchema = OperationSchema.extend({
+  pathParameters: z.array(parameterSchema),
+})
 
 export type Spec = {
   'tags'?: Tag[]
-  'info'?:
-    | DeepPartial<OpenAPIV2.Document['info']>
-    | DeepPartial<OpenAPIV3.Document['info']>
-    | DeepPartial<OpenAPIV3_1.Document['info']>
-  'paths'?: DeepPartial<TransformedOperation>
+  'info':
+    | Partial<OpenAPIV2.Document['info']>
+    | Partial<OpenAPIV3.Document['info']>
+    | Partial<OpenAPIV3_1.Document['info']>
   'host'?: OpenAPIV2.Document['host']
   'basePath'?: OpenAPIV2.Document['basePath']
   'schemes'?: OpenAPIV2.Document['schemes']
-  'externalDocs'?: Partial<ExternalDocs>
+  'externalDocs'?: ExternalDocs
   'servers'?: Server[]
   'components'?: OpenAPIV3.ComponentsObject | OpenAPIV3_1.ComponentsObject
   'webhooks'?: Webhooks
@@ -205,6 +268,13 @@ export type Tag = {
   externalDocs?: ExternalDocs
   operations: TransformedOperation[]
 }
+
+export const tagSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  externalDocs: z.record(z.any(), z.any()).optional(),
+  operations: z.array(OperationSchema),
+})
 
 export type ExternalDocs = {
   description: string

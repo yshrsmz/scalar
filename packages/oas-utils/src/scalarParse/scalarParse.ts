@@ -6,17 +6,20 @@ import {
   type ResolvedOpenAPIV3_1,
   openapi,
 } from '@scalar/openapi-parser'
+import { z } from 'zod'
 
 import {
   type Operation,
   OperationSchema,
   RemoveUndefined,
   type RequestMethod,
-  RequestMethodSchema,
   type Spec,
   type Tag,
   type TransformedOperation,
   objectKeys,
+  requestMethodSchema,
+  tagSchema,
+  transformedOperationSchema,
   validRequestMethods,
 } from '../types'
 
@@ -41,6 +44,13 @@ export const scalarParse = (specification: any): Promise<Spec> => {
           result.errors,
         )
       }
+
+      /**
+       * conditional type if schema extends a certain type ?
+       */
+
+      type SchemaType = typeof result.schema
+
       // TODO: zod schema parse
       const schema: ResolvedOpenAPI.Document = result.schema
       resolve(transformResult(structuredClone(schema)))
@@ -63,9 +73,9 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
 
     objectKeys(paths[path]).forEach((requestMethod) => {
       // Check if the request method is valid
-      const method = RequestMethodSchema.parse(requestMethod.toUpperCase())
+      const method = requestMethodSchema.parse(requestMethod.toUpperCase())
       if (method) {
-        // TODO: zod parse this object?
+        // TODO: zod parse this object
         // const operation = OperationSchema.parse(paths[path][requestMethod])
         const operation = paths[path][
           requestMethod
@@ -140,34 +150,33 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
   }
 }
 
-/** Returns a formatted list of Tag objects for the schema */
-// TODO: turn this into a zod schema ?
+/** Initialize and format tags array */
 export const initTags = <T extends ResolvedOpenAPI.Document>(schema: T) => {
+  const tags = new Array<z.infer<typeof tagSchema>>()
+
   const defaultTag = {
     name: 'default',
     description: '',
     operations: [],
   }
 
-  // format existing tags and ensure default tag exists
+  // format existing tags
   if ('tags' in schema && schema.tags !== undefined && schema.tags !== null) {
-    const tags = schema.tags as Tag[]
-
-    if (!tags.find((tag: Tag) => tag.name === 'default')) {
-      tags.push(defaultTag)
-    }
-    tags.forEach((tag) => {
-      if (!tag.operations) {
-        tag.operations = []
-      }
+    schema.tags.forEach((tag) => {
+      tags.push(tagSchema.parse(tag))
     })
-    return tags
-  } else return [defaultTag] as Tag[]
+  }
+
+  // Add the default tag if it doesn’t exist
+  if (!tags.find((tag) => tag.name === 'default')) {
+    tags.push(defaultTag)
+  }
+
+  return tags
 }
 
 /**
  * Initialize Paths if they don’t exist and properly type them
- * TODO: do this with zod!!
  */
 export const initPaths = <T extends ResolvedOpenAPI.Document>(schema: T) => {
   if (
@@ -255,3 +264,24 @@ export const transformWebhooks = <T extends ResolvedOpenAPI.Document>(
     return newWebhooks
   } else return {} as Record<string, ResolvedOpenAPIV3_1.PathItemObject>
 }
+
+const loginFormSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+})
+
+const useForm = <TValues>(
+  schema: z.Schema<TValues>,
+  onSubmit: (values: TValues) => void,
+) => {
+  return {
+    onSubmit: (values: unknown) => {
+      const newValues = schema.parse(values)
+      onSubmit(newValues)
+    },
+  }
+}
+
+const form = useForm(loginFormSchema, (values) => {
+  console.log(values)
+})
