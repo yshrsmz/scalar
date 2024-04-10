@@ -2,10 +2,11 @@ import {
   type OpenAPIV2,
   type OpenAPIV3,
   type OpenAPIV3_1,
+  type ResolvedOpenAPIV2,
+  type ResolvedOpenAPIV3,
+  type ResolvedOpenAPIV3_1,
 } from '@scalar/openapi-parser'
 import type { HarRequest } from 'httpsnippet-lite'
-import { describe } from 'node:test'
-import { deprecate } from 'node:util'
 import { z } from 'zod'
 
 export type AnyObject = Record<string, any>
@@ -212,7 +213,7 @@ export type RequestMethod = (typeof validRequestMethods)[number]
 
 export const requestMethodSchema = z.enum(validRequestMethods)
 
-export const OperationSchema = z.object({
+export const operationSchema = z.object({
   httpVerb: requestMethodSchema.optional(),
   operationId: z.string().optional(),
   name: z.string().optional(),
@@ -236,11 +237,12 @@ export const parameterSchema = z.object({
   examples: z.record(z.string(), z.any()).optional(),
 })
 
-export const transformedOperationSchema = OperationSchema.extend({
+export const transformedOperationSchema = operationSchema.extend({
   pathParameters: z.array(parameterSchema),
 })
 
 export type Spec = {
+  'paths'?: PathsObject
   'tags'?: z.infer<typeof tagSchema>[]
   'info':
     | Partial<OpenAPIV2.Document['info']>
@@ -260,6 +262,13 @@ export type Spec = {
   'security'?: OpenAPIV3.SecurityRequirementObject[]
 }
 
+export type PathsObject = Record<
+  string,
+  | ResolvedOpenAPIV3_1.PathsObject
+  | ResolvedOpenAPIV2.PathsObject
+  | ResolvedOpenAPIV3.PathsObject
+>
+
 export type Definitions = OpenAPIV2.DefinitionsObject
 
 export type Tag = {
@@ -273,12 +282,14 @@ export const tagSchema = z.object({
   name: z.string(),
   description: z.string(),
   externalDocs: z.record(z.any(), z.any()).optional(),
-  operations: z.array(OperationSchema),
+  // make this any because it is being validated in the parser
+  // but also the original data is being appended in the information field
+  operations: z.array(z.any()),
 })
 
 export type ExternalDocs = {
-  description: string
-  url: string
+  description?: string
+  url?: string
 }
 
 export type ServerVariables = Record<

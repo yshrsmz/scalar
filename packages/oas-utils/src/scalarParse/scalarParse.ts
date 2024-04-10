@@ -6,17 +6,18 @@ import {
   type ResolvedOpenAPIV3_1,
   openapi,
 } from '@scalar/openapi-parser'
-import { z } from 'zod'
+import { type z } from 'zod'
 
 import {
   type Operation,
-  OperationSchema,
+  type PathsObject,
   RemoveUndefined,
   type RequestMethod,
   type Spec,
   type Tag,
   type TransformedOperation,
   objectKeys,
+  operationSchema,
   requestMethodSchema,
   tagSchema,
   transformedOperationSchema,
@@ -44,16 +45,7 @@ export const scalarParse = (specification: any): Promise<Spec> => {
           result.errors,
         )
       }
-
-      /**
-       * conditional type if schema extends a certain type ?
-       */
-
-      type SchemaType = typeof result.schema
-
-      // TODO: zod schema parse
-      const schema: ResolvedOpenAPI.Document = result.schema
-      resolve(transformResult(structuredClone(schema)))
+      resolve(transformResult(structuredClone(result.schema)))
     } catch (error) {
       reject(error)
     }
@@ -67,90 +59,94 @@ export const transformResult = <TSpec extends ResolvedOpenAPI.Document>(
   const tags = initTags(schema)
   const paths = initPaths(schema)
 
-  /** Transform request methods, operations, tags */
-  Object.keys(paths).forEach((path: string) => {
-    // for each path, format operation data and add operations to tags
+  if (
+    'paths' in schema &&
+    schema.paths !== undefined &&
+    schema.paths !== null
+  ) {
+    Object.keys(schema.paths).forEach((path) => {
+      objectKeys(paths[path]).forEach((requestMethod) => {
+        // Check if the request method is valid
+        const method = requestMethodSchema.parse(requestMethod.toUpperCase())
+        if (method) {
+          // save the original operation
+          const operation = paths[path][requestMethod]
+          // parse the operation
+          const parsedOperation = operationSchema.parse(operation)
 
-    objectKeys(paths[path]).forEach((requestMethod) => {
-      // Check if the request method is valid
-      const method = requestMethodSchema.parse(requestMethod.toUpperCase())
-      if (method) {
-        // TODO: zod parse this object
-        // const operation = OperationSchema.parse(paths[path][requestMethod])
-        const operation = paths[path][
-          requestMethod
-        ] as ResolvedOpenAPI.Operation
-
-        // Transform the operation
-        const newOperation = {
-          httpVerb: requestMethod,
-          path,
-          operationId: operation.operationId || path,
-          name: operation.summary || path || '',
-          description: operation.description || '',
-          information: {
-            ...operation,
-          },
-          pathParameters: paths[path]?.parameters,
-        } as TransformedOperation
-
-        // If the operation has no tags, add operation to the default tag
-        if (!operation.tags || operation.tags.length === 0) {
-          // Create the default tag.
-
-          // find the index of the default tag
-          const indexOfDefaultTag = tags.findIndex(
-            (tag) => tag.name === 'default',
-          )
-
-          // Add the new operation to the default tag.
-          if (indexOfDefaultTag >= 0) {
-            // Add the new operation to the default tag.
-            tags[indexOfDefaultTag].operations.push(newOperation)
+          // Transform the operation
+          const newOperation = {
+            httpVerb: requestMethod,
+            path,
+            operationId: parsedOperation.operationId || path,
+            name: parsedOperation.summary || path || '',
+            description: parsedOperation.description || '',
+            information: {
+              ...operation,
+            },
+            pathParameters: paths[path]?.parameters,
           }
-        }
-        // If the operation has tags, loop through them.
-        else {
-          operation.tags.forEach((operationTag: string) => {
-            // Try to find the tag in the schema
-            const indexOfExistingTag = tags.findIndex(
-              (tag) => tag.name === operationTag,
+
+          // If the operation has no tags, add operation to the default tag
+          if (!parsedOperation.tags || parsedOperation.tags.length === 0) {
+            // Create the default tag.
+
+            // find the index of the default tag
+            const indexOfDefaultTag = tags.findIndex(
+              (tag) => tag.name === 'default',
             )
 
-            // Create tag if it doesn’t exist yet
-            if (indexOfExistingTag === -1) {
-              tags.push({
-                name: operationTag,
-                description: '',
-                operations: [],
-              })
+            // Add the new operation to the default tag.
+            if (indexOfDefaultTag >= 0) {
+              // Add the new operation to the default tag.
+              tags[indexOfDefaultTag].operations.push(newOperation)
             }
+          }
+          // If the operation has tags, loop through them.
+          else {
+            parsedOperation.tags.forEach((operationTag) => {
+              // Try to find the tag in the schema
+              const indexOfExistingTag = tags.findIndex(
+                (tag) => tag.name === operationTag,
+              )
 
-            // Decide where to store the new operation
-            const tagIndex =
-              indexOfExistingTag !== -1 ? indexOfExistingTag : tags.length - 1
+              // Create tag if it doesn’t exist yet
+              if (indexOfExistingTag === -1) {
+                tags.push({
+                  name: operationTag,
+                  description: '',
+                  operations: [],
+                })
+              }
 
-            // Create operations array if it doesn’t exist yet
-            if (typeof tags[tagIndex].operations === 'undefined') {
-              tags[tagIndex].operations = []
-            }
-            // Add the new operation
-            tags[tagIndex].operations.push(newOperation)
-          })
+              // Decide where to store the new operation
+              const tagIndex =
+                indexOfExistingTag !== -1 ? indexOfExistingTag : tags.length - 1
+
+              // Create operations array if it doesn’t exist yet
+              if (typeof tags[tagIndex].operations === 'undefined') {
+                tags[tagIndex].operations = []
+              }
+              // Add the new operation
+              tags[tagIndex].operations.push(newOperation)
+            })
+          }
         }
-      }
+      })
     })
-  })
+  }
 
   return {
     ...schema,
     webhooks: transformWebhooks(schema),
-    paths: paths,
     tags: tags.filter((tag) => tag.operations.length > 0),
+    paths: paths,
   }
 }
 
-/** Initialize and format tags array */
+/**
+ * Initialize and format tags array
+ */
 export const initTags = <T extends ResolvedOpenAPI.Document>(schema: T) => {
   const tags = new Array<z.infer<typeof tagSchema>>()
 
@@ -184,20 +180,12 @@ export const initPaths = <T extends ResolvedOpenAPI.Document>(schema: T) => {
     schema.paths !== undefined &&
     schema.paths !== null
   ) {
-    const paths = schema.paths as Record<
-      string,
-      | ResolvedOpenAPIV3_1.PathsObject
-      | ResolvedOpenAPIV2.PathsObject
-      | ResolvedOpenAPIV3.PathsObject
-    >
+    // TODO: create zod schema
+    // for each schema.paths => parse
+    // do we need to keep the original?
+    const paths = schema.paths as PathsObject
     return paths
-  } else
-    return {} as Record<
-      string,
-      | ResolvedOpenAPIV3_1.PathsObject
-      | ResolvedOpenAPIV2.PathsObject
-      | ResolvedOpenAPIV3.PathsObject
-    >
+  } else return {} as PathsObject
 }
 
 /**
@@ -264,24 +252,3 @@ export const transformWebhooks = <T extends ResolvedOpenAPI.Document>(
     return newWebhooks
   } else return {} as Record<string, ResolvedOpenAPIV3_1.PathItemObject>
 }
-
-const loginFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-})
-
-const useForm = <TValues>(
-  schema: z.Schema<TValues>,
-  onSubmit: (values: TValues) => void,
-) => {
-  return {
-    onSubmit: (values: unknown) => {
-      const newValues = schema.parse(values)
-      onSubmit(newValues)
-    },
-  }
-}
-
-const form = useForm(loginFormSchema, (values) => {
-  console.log(values)
-})
