@@ -1,18 +1,27 @@
 import { readFileSync } from 'fs'
 import {
+  type Identifier,
   type Node,
   ScriptKind,
   ScriptTarget,
   type SourceFile,
   SyntaxKind,
   createSourceFile,
-  forEachChild,
 } from 'typescript'
+
+// Check if identifier is a supported http method
+const checkForMethod = (identifier: Identifier) =>
+  Boolean(
+    identifier?.escapedText?.match(
+      /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$/,
+    ),
+  )
 
 const traverseNode = (node: Node, sourceFile: SourceFile) => {
   console.log(node)
 }
 
+// GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
 const traverseSourceFile = (sourceFile: SourceFile) => {
   // Go to syntaxList
   // - assumed to be first child for now
@@ -21,10 +30,38 @@ const traverseSourceFile = (sourceFile: SourceFile) => {
   console.log(SyntaxKind[syntaxList.kind])
 
   syntaxList.getChildren(sourceFile).forEach((node) => {
-    const child = node.getChildAt(0, sourceFile).getChildAt(0, sourceFile)
+    // Variable declaration
+    if (node.kind === SyntaxKind.FirstStatement) {
+      // export const GET =
+      const identifier = (node
+        ?.getChildAt(1, sourceFile)
+        ?.getChildAt(1, sourceFile)
+        ?.getChildAt(0, sourceFile)
+        ?.getChildAt(0, sourceFile) ||
+        // const GET =
+        node
+          ?.getChildAt(0, sourceFile)
+          ?.getChildAt(1, sourceFile)
+          ?.getChildAt(0, sourceFile)
+          ?.getChildAt(0, sourceFile)) as Identifier
 
-    if (child.kind === SyntaxKind.ExportKeyword) {
-      console.log('we got ourselves an exports')
+      // Ensure we have an accepted HTTP method
+      if (checkForMethod(identifier)) {
+        console.log(identifier.escapedText)
+      }
+    }
+    // Function declaration
+    else if (node.kind === SyntaxKind.FunctionDeclaration) {
+      // export async function
+      const identifier = node?.getChildAt(
+        node?.getChildAt(1, sourceFile).kind === SyntaxKind.Identifier ? 1 : 2,
+        sourceFile,
+      ) as Identifier
+
+      // Ensure we have an accepted HTTP method
+      if (checkForMethod(identifier)) {
+        console.log(identifier.escapedText)
+      }
     }
   })
 }
