@@ -61,6 +61,13 @@ const traverseSourceFile = (sourceFile: SourceFile) => {
       // Ensure we have an accepted HTTP method
       if (checkForMethod(identifier)) {
         console.log(identifier.escapedText)
+        const requestType = node
+          ?.getChildAt(4, sourceFile)
+          ?.getChildAt(0, sourceFile)
+          ?.getChildAt(2, sourceFile)
+
+        console.log(SyntaxKind[requestType?.kind])
+        console.log(requestType?.target)
       }
     }
   })
