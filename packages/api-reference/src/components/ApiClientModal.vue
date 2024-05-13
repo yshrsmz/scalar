@@ -210,6 +210,17 @@ const showSideBar = ref(false)
   cursor: pointer;
   animation: drawerexitfadein 0.35s forwards;
 }
+.dark-mode .api-client-drawer-exit {
+  background-color: transparent;
+}
+.dark-mode .api-client-drawer-exit:before {
+  content: '';
+  background-color: color-mix(in srgb, white 10%, var(--scalar-background-1));
+  opacity: 0.6;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
 @keyframes drawerexitfadein {
   from {
     opacity: 0;
