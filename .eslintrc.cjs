@@ -15,6 +15,7 @@ module.exports = {
     '@vue/typescript/recommended',
     '@vue/eslint-config-typescript',
     'prettier',
+    'plugin:tailwindcss/recommended',
     'plugin:storybook/recommended',
   ],
   plugins: ['@typescript-eslint', 'prettier'],
@@ -125,6 +126,14 @@ module.exports = {
             format: ['PascalCase'],
           },
         ],
+        'tailwindcss/no-arbitrary-value': 'warn',
+        'tailwindcss/no-custom-classname': 'off',
+        'tailwindcss/classnames-order': 'off',
+        /**
+         * This is a good rule but currently broken, leave off until they fix this
+         * @see https://github.com/francoismassart/eslint-plugin-tailwindcss/issues/327
+         */
+        'tailwindcss/no-redundant-variant': 'off',
       },
     },
     /** Vue SFC linting rules */
