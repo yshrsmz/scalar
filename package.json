@@ -21,8 +21,8 @@
     "eslint-plugin-storybook": "^0.6.15",
     "eslint-plugin-vue": "^9.21.1",
     "lefthook": "^1.6.1",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.11",
+    "prettier": "^3.3.2",
+    "prettier-plugin-tailwindcss": "^0.6.4",
     "start-server-and-test": "^2.0.3",
     "syncpack": "^12.3.0",
     "turbo": "^2.0.1",
@@ -81,5 +81,9 @@
       "require": "./dist/*.css"
     }
   },
-  "packageManager": "pnpm@9.2.0"
+  "packageManager": "pnpm@9.2.0",
+  "dependencies": {
+    "prettier-plugin-classnames": "^0.7.0",
+    "prettier-plugin-merge": "^0.7.0"
+  }
 }
