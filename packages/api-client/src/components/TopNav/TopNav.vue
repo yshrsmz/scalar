@@ -19,6 +19,7 @@ const {
       <template v-if="topNavItems.length === 1">
         <div class="flex items-center gap-1 w-full justify-center">
           <ScalarIcon
+            class="!stroke-2"
             :icon="topNavItems[0].icon"
             size="xs" />
           <div>{{ topNavItems[0].label }}</div>

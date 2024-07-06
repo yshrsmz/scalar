@@ -26,6 +26,7 @@ import {
   ref,
 } from 'vue'
 
+import MarcComponent from './MarcComponent.vue'
 import RequestSidebarItem from './RequestSidebarItem.vue'
 
 const {
@@ -338,7 +339,8 @@ useEventListener(document, 'keydown', (event) => {
         v-if="activeExample"
         class="flex-1"
         :class="[showSideBar ? 'sidebar-active-hide-layout' : '']">
-        <RequestSection />
+        <!-- <RequestSection /> -->
+        <MarcComponent />
         <ResponseSection
           :response="
             activeRequest?.history?.[activeRequest?.history?.length - 1]
