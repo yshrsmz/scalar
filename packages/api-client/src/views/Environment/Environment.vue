@@ -10,6 +10,7 @@ import ViewLayoutContent from '@/components/ViewLayout/ViewLayoutContent.vue'
 import ViewLayoutSection from '@/components/ViewLayout/ViewLayoutSection.vue'
 import { useWorkspace } from '@/store/workspace'
 import EnvironmentTable from '@/views/Environment/EnvironmentTable.vue'
+import { ScalarButton, ScalarModal, useModal } from '@scalar/components'
 import { nanoid } from 'nanoid'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -17,18 +18,24 @@ import { useRouter } from 'vue-router'
 import EnvironmentColors from './EnvironmentColors.vue'
 
 const router = useRouter()
+const colorModal = useModal()
+const environmentModal = useModal()
+
 const { environments, environmentMutators, getParsedEnvironmentVariables } =
   useWorkspace()
 
 const activeEnvironmentID = ref<string | null>(null)
 const nameInputRef = ref<HTMLInputElement | null>(null)
 const isEditingName = ref(false)
+const environmentName = ref('')
+const colorModalEnvironment = ref<string | null>(null)
+const selectedColor = ref('')
 
 function addEnvironment() {
   const environment = {
-    name: 'New Environment',
+    name: environmentName.value,
     uid: nanoid(),
-    color: 'grey',
+    color: selectedColor.value,
     raw: JSON.stringify({ '': '' }, null, 2),
     parsed: [{ key: '', value: '' }],
     isDefault: false,
@@ -38,6 +45,7 @@ function addEnvironment() {
   activeEnvironmentID.value = environment.uid
   router.push(activeEnvironmentID.value)
   updateEnvironmentRaw(environment.uid)
+  environmentModal.hide()
 }
 
 const handleEnvironmentUpdate = (raw: string) => {
@@ -53,9 +61,24 @@ const removeEnvironment = (uid: string) => {
   }
 }
 
+const handleOpenColorModal = (uid: string) => {
+  colorModalEnvironment.value = uid
+  selectedColor.value = environments[uid].color || ''
+  colorModal.show()
+}
+
 const handleColorSelect = (color: string) => {
-  if (activeEnvironmentID.value) {
-    environments[activeEnvironmentID.value].color = color
+  selectedColor.value = color
+}
+
+const submitColorChange = () => {
+  if (colorModalEnvironment.value && selectedColor.value) {
+    environmentMutators.edit(
+      colorModalEnvironment.value,
+      'color',
+      selectedColor.value,
+    )
+    colorModal.hide()
   }
 }
 
@@ -159,6 +182,13 @@ const parsedEnvironmentVariables = computed(() => {
   return [{ key: '', value: '' }]
 })
 
+const openEnvironmentModal = () => {
+  // Reset name value and set default grey color
+  selectedColor.value = '#8E8E8E'
+  environmentName.value = ''
+  environmentModal.show()
+}
+
 onMounted(setActiveEnvironment)
 </script>
 <template>
@@ -180,13 +210,14 @@ onMounted(setActiveEnvironment)
                 }"
                 :warningMessage="`Are you sure you want to delete this environment?`"
                 @click="activeEnvironmentID = environment.uid"
+                @colorModal="handleOpenColorModal"
                 @delete="removeEnvironment(environment.uid)" />
             </SidebarList>
           </div>
         </template>
         <template #button>
-          <SidebarButton :click="addEnvironment">
-            <template #title>Add Environment</template>
+          <SidebarButton :click="openEnvironmentModal">
+            <template #title>Add Environment Variable</template>
           </SidebarButton>
         </template>
       </Sidebar>
@@ -233,4 +264,60 @@ onMounted(setActiveEnvironment)
       </ViewLayoutContent>
     </ViewLayout>
   </SubpageHeader>
+  <ScalarModal
+    size="xs"
+    :state="environmentModal"
+    title="Create environment"
+    variant="color">
+    <div class="flex flex-col gap-3">
+      <input
+        v-model="environmentName"
+        class="bg-b-1 border flex-1 outline-none min-h-10 w-full text-sm px-2 py-1 rounded"
+        placeholder="Environment name" />
+      <EnvironmentColors
+        :activeColor="selectedColor"
+        class="p-3 w-full"
+        @select="handleColorSelect" />
+      <div class="flex gap-3">
+        <ScalarButton
+          class="flex-1"
+          variant="outlined"
+          @click="environmentModal.hide()">
+          Cancel
+        </ScalarButton>
+        <ScalarButton
+          class="flex-1"
+          type="submit"
+          @click="addEnvironment">
+          Save
+        </ScalarButton>
+      </div>
+    </div>
+  </ScalarModal>
+  <ScalarModal
+    size="xs"
+    :state="colorModal"
+    title="Edit Color"
+    variant="color">
+    <div class="flex flex-col gap-4">
+      <EnvironmentColors
+        :activeColor="selectedColor"
+        class="p-1 w-full"
+        @select="handleColorSelect" />
+      <div class="flex gap-3">
+        <ScalarButton
+          class="flex-1"
+          variant="outlined"
+          @click="colorModal.hide()">
+          Cancel
+        </ScalarButton>
+        <ScalarButton
+          class="flex-1"
+          type="submit"
+          @click="submitColorChange">
+          Save
+        </ScalarButton>
+      </div>
+    </div>
+  </ScalarModal>
 </template>

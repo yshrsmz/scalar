@@ -373,7 +373,7 @@ export const createWorkspaceStore = (router: Router, persistData = true) => {
     default: createEnvironment({
       uid: 'default',
       name: 'Global Environment',
-      color: 'blue',
+      color: '#0082D0',
       raw: JSON.stringify({ exampleKey: 'exampleValue' }, null, 2),
       parsed: [{ key: 'exampleKey', value: 'exampleValue' }],
       isDefault: true,
