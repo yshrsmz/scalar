@@ -474,8 +474,6 @@ const newTab = (name: string, uid: string) => {
   }
   .sidebar-active-width {
     width: 100%;
-    border: 1px solid var(--scalar-border-color);
-    border-radius: var(--scalar-radius);
   }
 }
 .gitbook-show {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useWorkspace } from '@/store/workspace'
+import { useMediaQuery } from '@vueuse/core'
 import { defineProps, ref } from 'vue'
 
 const props = withDefaults(
@@ -13,6 +14,8 @@ const props = withDefaults(
 )
 const { isReadOnly, sidebarWidth, setSidebarWidth } = useWorkspace()
 const isDragging = ref(false)
+
+const isNarrow = useMediaQuery('(max-width: 780px)')
 const sidebarRef = ref<HTMLElement | null>(null)
 
 const startDrag = (event: MouseEvent) => {
@@ -62,7 +65,7 @@ const startDrag = (event: MouseEvent) => {
     ref="sidebarRef"
     class="sidebar overflow-hidden relative flex flex-col border-r-1/2 bg-b-1"
     :class="{ dragging: isDragging }"
-    :style="{ width: sidebarWidth }">
+    :style="{ width: isNarrow ? undefined : sidebarWidth }">
     <slot name="header" />
     <div
       v-if="!isReadOnly && title"
@@ -80,6 +83,7 @@ const startDrag = (event: MouseEvent) => {
     </div>
     <slot name="button" />
     <div
+      v-if="!isNarrow"
       class="resizer"
       @mousedown="startDrag"></div>
   </aside>
