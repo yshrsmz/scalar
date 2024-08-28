@@ -149,7 +149,7 @@ onMounted(setActiveEnvironment)
           </template>
           <CodeInput
             v-if="activeEnvironmentID"
-            class="px-2 py-2.5"
+            class="pl-px pr-2 md:px-2 py-2.5"
             lineNumbers
             :modelValue="environments[activeEnvironmentID].raw"
             @update:modelValue="handleEnvironmentUpdate" />
