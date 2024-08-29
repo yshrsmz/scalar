@@ -125,7 +125,7 @@ const collectionSchema = z.object({
   /**  List of uids that correspond to collection requests or folders */
   'childUids': z.array(z.string()).default([]),
   /** An icon representing the collection */
-  'x-scalar-icon': z.string().default('line/interface-content-folder'),
+  'x-scalar-icon': z.string().default('interface-content-folder'),
 })
 
 /**

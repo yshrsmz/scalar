@@ -409,8 +409,7 @@ const newTab = (name: string, uid: string) => {
                   <LibraryIcon
                     class="text-sidebar-c-2 size-3.5 group-hover:hidden"
                     :src="
-                      collection['x-scalar-icon'] ||
-                      'line/interface-content-folder'
+                      collection['x-scalar-icon'] || 'interface-content-folder'
                     " />
                   <div
                     :class="{

@@ -1,35 +1,22 @@
 import type { IconDefinition } from '@/types'
 import type { Component } from 'vue'
 
-const iconsSolid: Record<string, Component> = import.meta.glob(
-  './solid/*.svg',
-  { eager: true },
-)
-const iconsLine: Record<string, Component> = import.meta.glob('./line/*.svg', {
-  eager: true,
-})
-const iconsBrand: Record<string, Component> = import.meta.glob(
-  './brand/*.svg',
-  { eager: true },
+const iconsImported: Record<string, Component> = import.meta.glob(
+  './icons/*.svg',
+  {
+    eager: true,
+  },
 )
 
-function mapLocalIcons(
-  imported: Record<string, Component>,
-  group: 'solid' | 'line' | 'brand',
-) {
+function mapLocalIcons(imported: Record<string, Component>) {
   const formatted = Object.entries(imported).map(([filename, rawData]) => {
     // Create a name from the import path
-    const name = filename
-      .replace('./solid/', '')
-      .replace('./line/', '')
-      .replace('./brand/', '')
-      .replace('.svg', '')
+    const name = filename.replace('./icons/', '').replace('.svg', '')
 
     const icon: IconDefinition = {
       // Prefix the src with the group so that the final flat icon map has unique keys
-      src: `${group}/${name}`,
+      src: name,
       title: name.replaceAll('-', ' '),
-      group,
       tags: [],
     }
     return {
@@ -49,23 +36,13 @@ function mapLocalIcons(
   }
 }
 
-const solid = mapLocalIcons(iconsSolid, 'solid')
-const line = mapLocalIcons(iconsLine, 'line')
-const brand = mapLocalIcons(iconsBrand, 'brand')
+const icons = mapLocalIcons(iconsImported)
 
 /** Icon list for icon selector */
-export const libraryIcons: IconDefinition[] = [
-  ...solid.iconDefinitionList,
-  ...line.iconDefinitionList,
-  ...brand.iconDefinitionList,
-]
+export const libraryIcons: IconDefinition[] = icons.iconDefinitionList
 
 /** Raw SVG strings */
-const iconData: Record<string, Component> = {
-  ...solid.iconDataMap,
-  ...line.iconDataMap,
-  ...brand.iconDataMap,
-}
+const iconData: Record<string, Component> = icons.iconDataMap
 
 export const getLibraryIcon = (src: string): Component | undefined => {
   return iconData[src]

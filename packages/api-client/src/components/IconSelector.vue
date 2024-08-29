@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { ICONS } from '@/constants'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { ScalarPopover } from '@scalar/components'
-import { LibraryIcon, libraryIcons } from '@scalar/icon-library'
+import { LibraryIcon } from '@scalar/icon-library'
 import { computed } from 'vue'
 
 const props = defineProps<{
@@ -16,12 +17,6 @@ const emit = defineEmits<{
 type Side = 'top' | 'bottom'
 type Alignment = 'start' | 'end'
 type AlignedPlacement = `${Side}-${Alignment}`
-
-// const modal = useModalState()
-
-const icons = computed(() =>
-  libraryIcons.filter(({ group }) => group === 'line'),
-)
 
 const value = computed<string>({
   get: () => props.modelValue,
@@ -45,16 +40,16 @@ const value = computed<string>({
         <ul
           class="grid grid-cols-[repeat(auto-fill,minmax(32px,1fr))] auto-rows-[32px] justify-between content-between rounded bg-b-1 border p-1 max-w-[420px] w-dvw custom-scroll">
           <RadioGroupOption
-            v-for="icon in icons"
-            :key="icon.src"
+            v-for="icon in ICONS"
+            :key="icon"
             as="li"
             class="p-2.25 rounded flex items-center justify-center text-c-3 cursor-pointer hover:text-c-2 hover:bg-b-2 ui-checked:bg-b-3 ui-active:bg-b-2"
-            :value="icon.src"
+            :value="icon"
             @click="close">
             <RadioGroupLabel class="sr-only">
-              {{ icon.title }} Icon
+              {{ icon.replaceAll('-', ' ') }} Icon
             </RadioGroupLabel>
-            <LibraryIcon :src="icon.src" />
+            <LibraryIcon :src="icon" />
           </RadioGroupOption>
         </ul>
       </RadioGroup>
