@@ -201,7 +201,7 @@ const handleItemRename = () => {
   // Collection
   else if ('spec' in props.item) {
     collectionMutators.edit(props.item.uid, 'spec.info.title', tempName.value)
-    collectionMutators.edit(props.item.uid, 'icon', tempIcon.value)
+    collectionMutators.edit(props.item.uid, 'x-scalar-icon', tempIcon.value)
   }
   // Folder
   else {
@@ -213,8 +213,8 @@ const handleItemRename = () => {
 
 const openRenameModal = () => {
   tempName.value = getTitle(props.item) || ''
-  if ('icon' in props.item)
-    tempIcon.value = props.item.icon || 'line/interface-content-folder'
+  if ('x-scalar-icon' in props.item)
+    tempIcon.value = props.item['x-scalar-icon']
   renameModal.show()
 }
 
@@ -459,7 +459,9 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
       <div
         class="grid gap-2"
         :class="{ 'grid-cols-[auto,1fr]': isCollection }">
-        <div class="flex aspect-square">
+        <div
+          v-if="isCollection"
+          class="flex aspect-square">
           <IconSelector v-model="tempIcon">
             <ScalarButton
               class="aspect-square px-0 h-auto"

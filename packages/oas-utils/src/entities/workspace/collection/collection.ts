@@ -116,16 +116,16 @@ const specSchema = z.object({
 })
 
 const collectionSchema = z.object({
-  uid: nanoidSchema,
-  spec: specSchema.optional().default({}),
+  'uid': nanoidSchema,
+  'spec': specSchema.optional().default({}),
   /** A dictionary which maps the openapi spec name keys to the security-scheme UID's for lookup */
-  securitySchemeDict: z.record(z.string(), z.string()).optional().default({}),
+  'securitySchemeDict': z.record(z.string(), z.string()).optional().default({}),
   /** The currently selected server */
-  selectedServerUid: z.string().default(''),
+  'selectedServerUid': z.string().default(''),
   /**  List of uids that correspond to collection requests or folders */
-  childUids: z.array(z.string()).default([]),
+  'childUids': z.array(z.string()).default([]),
   /** An icon representing the collection */
-  icon: z.string().default(''),
+  'x-scalar-icon': z.string().default('line/interface-content-folder'),
 })
 
 /**
