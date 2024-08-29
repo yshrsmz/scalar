@@ -16,8 +16,9 @@
   },
   "scripts": {
     "build": "scalar-build-vite",
-    "lint:check": "eslint .",
+    "lint:check": "eslint . && pnpm lint:icons",
     "lint:fix": "eslint . --fix",
+    "lint:icons": "svglint src/icons/*.svg --config .svglintrc.js",
     "types:build": "scalar-types-build-vue",
     "types:check": "scalar-types-check-vue"
   },
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@scalar/build-tooling": "workspace:*",
     "@vitejs/plugin-vue": "^5.0.4",
+    "svglint": "^2.7.1",
     "vite": "^5.2.10",
     "vite-svg-loader": "^5.1.0"
   }
