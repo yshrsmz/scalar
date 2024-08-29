@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ActionForm from '@/components/ActionForm.vue'
 import { HttpMethod } from '@/components/HttpMethod'
-import { IconSelector } from '@/components/IconSelector'
+import IconSelector from '@/components/IconSelector.vue'
 import DeleteSidebarListElement from '@/components/Sidebar/Actions/DeleteSidebarListElement.vue'
 import { useSidebar } from '@/hooks'
 import { getModifiers } from '@/libs'
@@ -465,7 +465,6 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
           <IconSelector
             v-model="tempIcon"
             placement="bottom-start">
-            <template #title>Collection Icon</template>
             <ScalarButton
               class="aspect-square px-0 h-auto"
               variant="outlined">

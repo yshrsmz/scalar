@@ -408,7 +408,10 @@ const newTab = (name: string, uid: string) => {
                 <template #leftIcon>
                   <LibraryIcon
                     class="text-sidebar-c-2 size-3.5 group-hover:hidden"
-                    :src="collection['x-scalar-icon']" />
+                    :src="
+                      collection['x-scalar-icon'] ||
+                      'line/interface-content-folder'
+                    " />
                   <div
                     :class="{
                       'rotate-90': collapsedSidebarFolders[collection.uid],
