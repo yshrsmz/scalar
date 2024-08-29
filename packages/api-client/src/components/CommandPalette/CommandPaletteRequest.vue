@@ -4,8 +4,11 @@ import { useWorkspace } from '@/store/workspace'
 import { ScalarButton, ScalarIcon, ScalarListbox } from '@scalar/components'
 import type { RequestMethod } from '@scalar/oas-utils/helpers'
 import { useToasts } from '@scalar/use-toasts'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
+import CommandActionForm from './CommandActionForm.vue'
+import CommandActionInput from './CommandActionInput.vue'
 
 const emits = defineEmits<{
   (event: 'close'): void
@@ -101,33 +104,17 @@ const handleSubmit = () => {
   push(`/workspace/${activeWorkspace.value.uid}/request/${newRequest.uid}`)
   emits('close')
 }
-
-const requestInput = ref<HTMLInputElement | null>(null)
-onMounted(() => {
-  requestInput.value?.focus()
-})
 </script>
 <template>
-  <div class="flex w-full flex-col gap-3">
-    <div
-      class="gap-3 rounded bg-b-2 focus-within:bg-b-1 focus-within:shadow-border min-h-20 relative">
-      <label
-        class="absolute w-full h-full opacity-0 cursor-text"
-        for="requestname"></label>
-      <input
-        id="requestname"
-        ref="requestInput"
-        v-model="requestName"
-        autocomplete="off"
-        class="border-transparent outline-none w-full pl-8 text-sm min-h-8 py-1.5"
-        data-form-type="other"
-        data-lpignore="true"
-        label="Request Name"
-        placeholder="Request Name"
-        @keydown.prevent.enter="handleSubmit" />
-    </div>
-    <div class="flex">
-      <div class="flex flex-1 gap-2 max-h-8">
+  <CommandActionForm
+    :disabled="!requestName.trim()"
+    @submit="handleSubmit">
+    <CommandActionInput
+      v-model="requestName"
+      label="Request Name"
+      placeholder="Request Name" />
+    <template #options>
+      <div class="flex gap-2">
         <HttpMethod
           :isEditable="true"
           isSquare
@@ -167,12 +154,7 @@ onMounted(() => {
           </ScalarButton>
         </ScalarListbox>
       </div>
-      <ScalarButton
-        class="max-h-8 text-xs p-0 px-3"
-        :disabled="!requestName.trim()"
-        @click="handleSubmit">
-        Create Request
-      </ScalarButton>
-    </div>
-  </div>
+    </template>
+    <template #submit>Create Request</template>
+  </CommandActionForm>
 </template>
