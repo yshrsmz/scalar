@@ -15,8 +15,11 @@ npm add @scalar/icon-library
 
 ## Usage
 
-```ts
-import { getIcon } from '@scalar/icon-library'
-
-// Todo
+```vue
+<script setup lang="ts">
+import { LibraryIcon } from '@scalar/icon-library'
+</script>
+<template>
+  <LibraryIcon src="brand/brand-adobe" />
+</template>
 ```
