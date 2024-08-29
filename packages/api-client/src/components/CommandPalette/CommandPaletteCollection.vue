@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import IconSelector from '@/components/IconSelector.vue'
 import { useWorkspace } from '@/store/workspace'
 import { ScalarButton } from '@scalar/components'
+import { LibraryIcon } from '@scalar/icon-library'
 import { useToasts } from '@scalar/use-toasts'
 import { onMounted, ref } from 'vue'
 
@@ -10,6 +12,7 @@ const emits = defineEmits<{
 
 const { activeWorkspace, collectionMutators } = useWorkspace()
 const collectionName = ref('')
+const collectionIcon = ref('interface-content-folder')
 const { toast } = useToasts()
 
 const handleSubmit = () => {
@@ -19,13 +22,14 @@ const handleSubmit = () => {
   }
   collectionMutators.add(
     {
-      spec: {
+      'spec': {
         openapi: '3.1.0',
         info: {
           title: collectionName.value,
           version: '0.0.1',
         },
       },
+      'x-scalar-icon': collectionIcon.value,
     },
     activeWorkspace.value.uid,
   )
@@ -57,7 +61,19 @@ onMounted(() => {
         @keydown.prevent.enter="handleSubmit" />
     </div>
     <div class="flex">
-      <div class="flex flex-1 gap-2 max-h-8"></div>
+      <div class="flex flex-1 gap-2 max-h-8">
+        <IconSelector
+          v-model="collectionIcon"
+          placement="bottom-start">
+          <ScalarButton
+            class="aspect-square px-0 h-auto"
+            variant="outlined">
+            <LibraryIcon
+              class="size-4 text-c-2"
+              :src="collectionIcon" />
+          </ScalarButton>
+        </IconSelector>
+      </div>
       <ScalarButton
         class="max-h-8 text-xs p-0 px-3"
         :disabled="!collectionName.trim()"
