@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import ActionForm from '@/components/ActionForm.vue'
 import { HttpMethod } from '@/components/HttpMethod'
+import { IconSelector } from '@/components/IconSelector'
 import DeleteSidebarListElement from '@/components/Sidebar/Actions/DeleteSidebarListElement.vue'
 import { useSidebar } from '@/hooks'
 import { getModifiers } from '@/libs'
@@ -393,7 +395,9 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
                   "
                   :item="item"
                   :parentUids="parentUids"
-                  :resourceTitle="resourceTitle" />
+                  :resourceTitle="resourceTitle"
+                  @delete="deleteModal.show()"
+                  @rename="openRenameModal" />
                 <span>&hairsp;</span>
               </div>
             </div>
@@ -442,28 +446,34 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
   </ScalarModal>
   <ScalarModal
     :state="renameModal"
-    :title="`Rename ${resourceTitle}`">
-    <ScalarTextField
-      v-model="tempName"
-      :label="resourceTitle"
-      @keydown.prevent.enter="handleItemRename" />
-    <div class="flex gap-3">
-      <ScalarButton
-        class="flex-1"
-        variant="outlined"
-        @click="renameModal.hide()">
-        Cancel
-      </ScalarButton>
-      <ScalarButton
-        class="flex-1"
-        type="submit"
-        @click="handleItemRename">
-        Save
-      </ScalarButton>
-    </div>
+    :title="`Rename ${resourceTitle}`"
+    variant="form">
+    <ActionForm
+      @cancel="renameModal.hide()"
+      @submit="handleItemRename">
+      <div
+        class="grid gap-2"
+        :class="{ 'grid-cols-[auto,1fr]': isCollection }">
+        <div class="flex aspect-square">
+          <IconSelector modelValue="none">
+            <ScalarButton
+              class="aspect-square px-0 h-auto"
+              variant="outlined">
+              <ScalarIcon
+                icon="CodeFolder"
+                size="md" />
+            </ScalarButton>
+          </IconSelector>
+        </div>
+        <ScalarTextField
+          v-model="tempName"
+          class="flex-1"
+          :label="resourceTitle" />
+      </div>
+      <template #submit>Save</template>
+    </ActionForm>
   </ScalarModal>
 </template>
-
 <style>
 @import '@scalar/draggable/style.css';
 </style>

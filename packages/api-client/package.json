@@ -89,6 +89,10 @@
       "import": "./dist/components/Search/index.js",
       "types": "./dist/components/Search/index.d.ts"
     },
+    "./components/IconSelector": {
+      "import": "./dist/components/IconSelector/index.js",
+      "types": "./dist/components/IconSelector/index.d.ts"
+    },
     "./components/HttpMethod": {
       "import": "./dist/components/HttpMethod/index.js",
       "types": "./dist/components/HttpMethod/index.d.ts"
@@ -128,6 +132,7 @@
     "@headlessui/vue": "^1.7.20",
     "@scalar/components": "workspace:*",
     "@scalar/draggable": "workspace:*",
+    "@scalar/icon-library": "workspace:*",
     "@scalar/oas-utils": "workspace:*",
     "@scalar/object-utils": "workspace:*",
     "@scalar/openapi-parser": "workspace:*",
