@@ -571,7 +571,7 @@ importers:
         version: 1.7.22(vue@3.4.31(typescript@5.5.2))
       '@scalar/components':
         specifier: workspace:*
-        version: link:../components
+        version: link:../icon-library
       '@scalar/draggable':
         specifier: workspace:*
         version: link:../draggable
@@ -827,7 +827,7 @@ importers:
         version: link:../code-highlight
       '@scalar/components':
         specifier: workspace:*
-        version: link:../components
+        version: link:../icon-library
       '@scalar/oas-utils':
         specifier: workspace:*
         version: link:../oas-utils
@@ -1570,6 +1570,28 @@ importers:
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.14.10)(jsdom@24.1.0)(terser@5.31.2)
+
+  packages/icon-library:
+    dependencies:
+      vue:
+        specifier: ^3.4.29
+        version: 3.4.31(typescript@5.5.2)
+    devDependencies:
+      '@scalar/build-tooling':
+        specifier: workspace:*
+        version: link:../build-tooling
+      '@vitejs/plugin-vue':
+        specifier: ^5.0.4
+        version: 5.0.5(vite@5.3.3(@types/node@20.14.10)(terser@5.31.2))(vue@3.4.31(typescript@5.5.2))
+      svglint:
+        specifier: ^2.7.1
+        version: 2.7.1
+      vite:
+        specifier: ^5.2.10
+        version: 5.3.3(@types/node@20.14.10)(terser@5.31.2)
+      vite-svg-loader:
+        specifier: ^5.1.0
+        version: 5.1.0(vue@3.4.31(typescript@5.5.2))
 
   packages/mock-server:
     dependencies:
@@ -16287,8 +16309,8 @@ packages:
   vue-component-type-helpers@2.0.21:
     resolution: {integrity: sha512-3NaicyZ7N4B6cft4bfb7dOnPbE9CjLcx+6wZWAg5zwszfO4qXRh+U52dN5r5ZZfc6iMaxKCEcoH9CmxxoFZHLg==}
 
-  vue-component-type-helpers@2.0.29:
-    resolution: {integrity: sha512-58i+ZhUAUpwQ+9h5Hck0D+jr1qbYl4voRt5KffBx8qzELViQ4XdT/Tuo+mzq8u63teAG8K0lLaOiL5ofqW38rg==}
+  vue-component-type-helpers@2.1.0:
+    resolution: {integrity: sha512-Ec+sh0qzakYsoKiyey7izf83sVqOcB9PT12LU9z4csAaJ4CipO6o0+5PVMJRgMryKAi9HL7SDEVqoGNpcxzSmA==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -23710,7 +23732,7 @@ snapshots:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.4.31(typescript@5.5.2)
-      vue-component-type-helpers: 2.0.29
+      vue-component-type-helpers: 2.1.0
     transitivePeerDependencies:
       - encoding
       - prettier
@@ -23727,7 +23749,7 @@ snapshots:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.4.31(typescript@5.5.2)
-      vue-component-type-helpers: 2.0.29
+      vue-component-type-helpers: 2.1.0
     transitivePeerDependencies:
       - encoding
       - prettier
@@ -36858,7 +36880,7 @@ snapshots:
 
   vue-component-type-helpers@2.0.21: {}
 
-  vue-component-type-helpers@2.0.29: {}
+  vue-component-type-helpers@2.1.0: {}
 
   vue-demi@0.14.10(vue@3.4.31(typescript@5.5.2)):
     dependencies:
