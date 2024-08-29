@@ -24,7 +24,9 @@ const value = computed<string>({
     v-model="value"
     as="template">
     <div class="flex flex-col gap-1">
-      <RadioGroupLabel class="text-c-2 text-xs font-medium px-2">
+      <RadioGroupLabel
+        v-if="$slots.default"
+        class="text-c-2 text-xs font-medium px-2">
         <slot />
       </RadioGroupLabel>
       <div
@@ -40,8 +42,7 @@ const value = computed<string>({
             :class="{
               'bg-b-2': active,
               'bg-b-3': checked,
-            }"
-            @click="() => (checked ? (value = '') : undefined)">
+            }">
             <RadioGroupLabel class="sr-only">
               {{ icon.title }} Icon
             </RadioGroupLabel>

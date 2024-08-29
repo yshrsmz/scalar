@@ -462,7 +462,10 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
         <div
           v-if="isCollection"
           class="flex aspect-square">
-          <IconSelector v-model="tempIcon">
+          <IconSelector
+            v-model="tempIcon"
+            placement="bottom-start">
+            <template #title>Collection Icon</template>
             <ScalarButton
               class="aspect-square px-0 h-auto"
               variant="outlined">
