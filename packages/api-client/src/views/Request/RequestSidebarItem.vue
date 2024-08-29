@@ -21,6 +21,7 @@ import {
   type DraggingItem,
   type HoveredItem,
 } from '@scalar/draggable'
+import { LibraryIcon } from '@scalar/icon-library'
 import type { Collection } from '@scalar/oas-utils/entities/workspace/collection'
 import type { Folder } from '@scalar/oas-utils/entities/workspace/folder'
 import type {
@@ -184,6 +185,7 @@ const _isDroppable = (draggingItem: DraggingItem, hoveredItem: HoveredItem) => {
 }
 
 const tempName = ref('')
+const tempIcon = ref('')
 const renameModal = useModal()
 const deleteModal = useModal()
 
@@ -199,6 +201,7 @@ const handleItemRename = () => {
   // Collection
   else if ('spec' in props.item) {
     collectionMutators.edit(props.item.uid, 'spec.info.title', tempName.value)
+    collectionMutators.edit(props.item.uid, 'icon', tempIcon.value)
   }
   // Folder
   else {
@@ -210,6 +213,8 @@ const handleItemRename = () => {
 
 const openRenameModal = () => {
   tempName.value = getTitle(props.item) || ''
+  if ('icon' in props.item)
+    tempIcon.value = props.item.icon || 'line/interface-content-folder'
   renameModal.show()
 }
 
@@ -455,13 +460,13 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
         class="grid gap-2"
         :class="{ 'grid-cols-[auto,1fr]': isCollection }">
         <div class="flex aspect-square">
-          <IconSelector modelValue="none">
+          <IconSelector v-model="tempIcon">
             <ScalarButton
               class="aspect-square px-0 h-auto"
               variant="outlined">
-              <ScalarIcon
-                icon="CodeFolder"
-                size="md" />
+              <LibraryIcon
+                class="size-4 text-c-2"
+                :src="tempIcon" />
             </ScalarButton>
           </IconSelector>
         </div>

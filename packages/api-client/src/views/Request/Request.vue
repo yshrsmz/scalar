@@ -30,6 +30,7 @@ import {
   ScalarSearchResultList,
 } from '@scalar/components'
 import type { DraggingItem, HoveredItem } from '@scalar/draggable'
+import { LibraryIcon } from '@scalar/icon-library'
 import { useToasts } from '@scalar/use-toasts'
 import { useMediaQuery } from '@vueuse/core'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -405,11 +406,9 @@ const newTab = (name: string, uid: string) => {
                 @newTab="newTab"
                 @onDragEnd="onDragEnd">
                 <template #leftIcon>
-                  <ScalarIcon
-                    class="text-sidebar-c-2 text-sm group-hover:hidden"
-                    icon="CodeFolder"
-                    size="sm"
-                    thickness="2" />
+                  <LibraryIcon
+                    class="text-sidebar-c-2 size-3.5 group-hover:hidden"
+                    :src="collection.icon || 'line/interface-content-folder'" />
                   <div
                     :class="{
                       'rotate-90': collapsedSidebarFolders[collection.uid],

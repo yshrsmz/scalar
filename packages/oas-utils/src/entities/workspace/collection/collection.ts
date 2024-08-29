@@ -124,6 +124,8 @@ const collectionSchema = z.object({
   selectedServerUid: z.string().default(''),
   /**  List of uids that correspond to collection requests or folders */
   childUids: z.array(z.string()).default([]),
+  /** An icon representing the collection */
+  icon: z.string().default(''),
 })
 
 /**
