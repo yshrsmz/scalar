@@ -51,6 +51,9 @@
     "CHANGELOG"
   ],
   "module": "./dist/index.js",
+  "dependencies": {
+    "httpsnippet-lite": "^3.0.5"
+  },
   "devDependencies": {
     "@scalar/build-tooling": "workspace:*",
     "@types/har-format": "^1.2.15"

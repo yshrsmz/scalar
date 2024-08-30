@@ -1,3 +1,5 @@
+import type { TargetId as SnippetTargetId } from 'httpsnippet-lite'
+
 export type { Request } from 'har-format'
 
 export type Source = {
@@ -9,6 +11,8 @@ export type Source = {
   code: string
 }
 
-export type TargetId = 'node' | 'js'
+export type TargetId = 'node' | 'js' | SnippetTargetId
 
 export type ClientId = 'undici' | 'fetch' | 'ofetch'
+
+export type { HarRequest } from 'httpsnippet-lite'

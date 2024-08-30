@@ -9,7 +9,7 @@ import {
 import { ScalarCodeBlock } from '@scalar/components'
 import { createHash, ssrState } from '@scalar/oas-utils/helpers'
 import { getRequestFromOperation } from '@scalar/oas-utils/spec-getters'
-import { type TargetId, snippetz } from '@scalar/snippetz'
+import { HTTPSnippet, type TargetId, snippetz } from '@scalar/snippetz'
 import type {
   CustomRequestExample,
   ExampleRequestSSRKey,
@@ -17,7 +17,6 @@ import type {
   TransformedOperation,
 } from '@scalar/types/legacy'
 import { asyncComputed } from '@vueuse/core'
-import { HTTPSnippet } from 'httpsnippet-lite'
 import {
   computed,
   inject,
