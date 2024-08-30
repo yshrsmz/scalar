@@ -435,10 +435,10 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
   <ScalarModal
     :size="'sm'"
     :state="deleteModal"
-    :title="`Delete ${resourceTitle}`">
+    :title="`Delete ${itemName}`">
     <DeleteSidebarListElement
       :variableName="itemName"
-      warningMessage="Warning: Deleting this will delete all items inside of this"
+      warningMessage="This cannot be undone. You’re about to delete the collection and all requests inside the collection."
       @close="deleteModal.hide()"
       @delete="handleItemDelete" />
   </ScalarModal>
