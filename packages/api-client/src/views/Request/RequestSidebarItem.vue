@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { HttpMethod } from '@/components/HttpMethod'
 import DeleteSidebarListElement from '@/components/Sidebar/Actions/DeleteSidebarListElement.vue'
+import RenameSidebarListElement from '@/components/Sidebar/Actions/RenameSidebarListElement.vue'
 import { useSidebar } from '@/hooks'
 import { getModifiers } from '@/libs'
 import { PathId } from '@/router'
 import { useWorkspace } from '@/store/workspace'
 import {
-  ScalarButton,
   ScalarContextMenu,
   ScalarIcon,
   ScalarModal,
-  ScalarTextField,
   useModal,
 } from '@scalar/components'
 import {
@@ -181,33 +180,31 @@ const _isDroppable = (draggingItem: DraggingItem, hoveredItem: HoveredItem) => {
   return true
 }
 
-const tempName = ref('')
 const renameModal = useModal()
 const deleteModal = useModal()
 
-const handleItemRename = () => {
+const handleItemRename = (name: string) => {
   // Request
   if ('summary' in props.item) {
-    requestMutators.edit(props.item.uid, 'summary', tempName.value)
+    requestMutators.edit(props.item.uid, 'summary', name)
   }
   // Example
   else if ('requestUid' in props.item) {
-    requestExampleMutators.edit(props.item.uid, 'name', tempName.value)
+    requestExampleMutators.edit(props.item.uid, 'name', name)
   }
   // Collection
   else if ('spec' in props.item) {
-    collectionMutators.edit(props.item.uid, 'spec.info.title', tempName.value)
+    collectionMutators.edit(props.item.uid, 'spec.info.title', name)
   }
   // Folder
   else {
-    folderMutators.edit(props.item.uid, 'name', tempName.value)
+    folderMutators.edit(props.item.uid, 'name', name)
   }
 
   renameModal.hide()
 }
 
 const openRenameModal = () => {
-  tempName.value = getTitle(props.item) || ''
   renameModal.show()
 }
 
@@ -269,6 +266,16 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
     }
   }
 }
+
+const deleteWarningMessage = computed(() => {
+  if (resourceTitle.value === 'Collection') {
+    return 'This cannot be undone. You’re about to delete the collection and all folders andrequests inside the collection.'
+  }
+  if (resourceTitle.value === 'Folder') {
+    return 'This cannot be undone. You’re about to delete the folder and all requests inside the folder.'
+  }
+  return `This cannot be undone. You’re about to delete the ${resourceTitle.value.toLowerCase()}.`
+})
 </script>
 <template>
   <div
@@ -438,7 +445,7 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
     :title="`Delete ${itemName}`">
     <DeleteSidebarListElement
       :variableName="itemName"
-      warningMessage="This cannot be undone. You’re about to delete the collection and all requests inside the collection."
+      :warningMessage="deleteWarningMessage"
       @close="deleteModal.hide()"
       @delete="handleItemDelete" />
   </ScalarModal>
@@ -446,24 +453,10 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
     :size="'xxs'"
     :state="renameModal"
     :title="`Rename ${resourceTitle}`">
-    <ScalarTextField
-      v-model="tempName"
-      :label="resourceTitle"
-      @keydown.prevent.enter="handleItemRename" />
-    <div class="flex gap-3">
-      <ScalarButton
-        class="flex-1"
-        variant="outlined"
-        @click="renameModal.hide()">
-        Cancel
-      </ScalarButton>
-      <ScalarButton
-        class="flex-1"
-        type="submit"
-        @click="handleItemRename">
-        Save
-      </ScalarButton>
-    </div>
+    <RenameSidebarListElement
+      :name="itemName"
+      @close="renameModal.hide()"
+      @rename="handleItemRename" />
   </ScalarModal>
 </template>
 
