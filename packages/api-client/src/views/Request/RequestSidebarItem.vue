@@ -433,7 +433,7 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
     </Draggable>
   </div>
   <ScalarModal
-    :size="'sm'"
+    :size="'xxs'"
     :state="deleteModal"
     :title="`Delete ${itemName}`">
     <DeleteSidebarListElement
@@ -443,6 +443,7 @@ const handleNavigation = (event: KeyboardEvent, item: typeof props.item) => {
       @delete="handleItemDelete" />
   </ScalarModal>
   <ScalarModal
+    :size="'xxs'"
     :state="renameModal"
     :title="`Rename ${resourceTitle}`">
     <ScalarTextField
