@@ -16,7 +16,7 @@ export function filter(
 
   return {
     specification: traverse(
-      getEntrypoint(filesystem).specification,
+      getEntrypoint(filesystem)?.specification,
       (schema) => {
         return callback(schema) ? schema : undefined
       },

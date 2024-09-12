@@ -1,13 +1,13 @@
-import { type OpenApiVersion, OpenApiVersions } from '../configuration'
+import { OpenApiVersions } from '../configuration'
 import type { AnyObject, DetailsResult } from '../types'
 
 /**
  * Get versions of the OpenAPI specification.
  */
-export function details(specification: AnyObject): DetailsResult {
+export function details(specification: AnyObject | undefined): DetailsResult {
   for (const version of new Set(OpenApiVersions)) {
     const specificationType = version === '2.0' ? 'swagger' : 'openapi'
-    const value = specification[specificationType]
+    const value = specification?.[specificationType]
 
     if (typeof value === 'string' && value.startsWith(version)) {
       return {

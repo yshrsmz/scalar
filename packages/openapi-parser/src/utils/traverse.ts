@@ -4,9 +4,13 @@ import type { AnyObject } from '../types'
  * Recursively traverses the specification and applies the transform function to each node.
  */
 export function traverse(
-  specification: AnyObject,
-  transform: (specification: AnyObject) => AnyObject,
+  specification: AnyObject | undefined,
+  transform: (specification: AnyObject) => AnyObject | undefined,
 ) {
+  if (specification === undefined) {
+    return undefined
+  }
+
   const result: AnyObject = {}
 
   for (const [key, value] of Object.entries(specification)) {

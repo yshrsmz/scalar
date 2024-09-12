@@ -8,7 +8,6 @@ export async function get<T extends Task[]>(
   queue: Queue<T>,
 ): Promise<CommandChain<T>> {
   return {
-    filesystem: [],
     ...(await workThroughQueue(queue)),
   }
 }

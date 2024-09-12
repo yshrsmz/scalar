@@ -1,4 +1,4 @@
-import Ajv04 from 'ajv-draft-04'
+import Ajv04, { type ErrorObject } from 'ajv-draft-04'
 import addFormats from 'ajv-formats'
 import Ajv2020 from 'ajv/dist/2020.js'
 
@@ -21,31 +21,34 @@ import { transformErrors } from '../../utils/transformErrors'
 /**
  * Configure available JSON Schema versions
  */
-export const jsonSchemaVersions = {
+export const jsonSchemas = {
   'http://json-schema.org/draft-04/schema#': Ajv04,
   'https://json-schema.org/draft/2020-12/schema': Ajv2020,
 }
 
 export class Validator {
-  public version: '2.0' | '3.0' | '3.1'
+  public version: '2.0' | '3.0' | '3.1' | undefined
 
   public static supportedVersions = OpenApiVersions
 
   // Object with function *or* object { errors: string }
-  protected ajvValidators: Record<
-    string,
-    ((specification: AnyObject) => boolean) & {
-      errors: string
-    }
+  protected ajvValidators: Partial<
+    Record<
+      OpenApiVersion,
+      ((specification: AnyObject) => boolean) & {
+        errors?:
+          | ErrorObject<string, Record<string, any>, unknown>[]
+          | null
+          | undefined
+      }
+    >
   > = {}
 
-  protected errors: string
+  protected specificationVersion: string | undefined
 
-  protected specificationVersion: string
+  protected specificationType: string | undefined
 
-  protected specificationType: string
-
-  public specification: AnyObject
+  public specification: AnyObject | undefined
 
   /**
    * Checks whether a specification is valid and all references can be resolved.
@@ -56,6 +59,17 @@ export class Validator {
   ): Promise<ValidateResult> {
     const entrypoint = filesystem.find((file) => file.isEntrypoint)
     const specification = entrypoint?.specification
+
+    if (!entrypoint || !specification) {
+      if (options?.throwOnError) {
+        throw new Error(ERRORS.NO_CONTENT)
+      }
+
+      return {
+        valid: false,
+        errors: transformErrors({}, ERRORS.NO_CONTENT),
+      }
+    }
 
     // TODO: How does this work with a filesystem?
     this.specification = specification
@@ -128,7 +142,7 @@ export class Validator {
         errors: [...(schemaResult.errors ?? []), ...resolvedReferences.errors],
         schema: resolvedReferences.schema,
       }
-    } catch (error) {
+    } catch (error: any) {
       // Something went horribly wrong!
       if (options?.throwOnError) {
         throw error
@@ -154,7 +168,8 @@ export class Validator {
     const schema = OpenApiSpecifications[version]
 
     // Load JSON Schema
-    const AjvClass = jsonSchemaVersions[schema.$schema]
+    const jsonSchemaVersion = schema.$schema as keyof typeof jsonSchemas
+    const AjvClass = jsonSchemas[jsonSchemaVersion]
 
     // Get the correct Ajv validator
     const ajv = new AjvClass({
@@ -172,6 +187,10 @@ export class Validator {
       ajv.addFormat('media-range', true)
     }
 
-    return (this.ajvValidators[version] = ajv.compile(schema))
+    const validator = ajv.compile(schema)
+
+    this.ajvValidators[version] = validator
+
+    return validator
   }
 }

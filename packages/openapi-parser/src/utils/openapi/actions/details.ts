@@ -11,5 +11,5 @@ export async function details<T extends Task[]>(
 ): Promise<ReturnType<typeof detailsUtility>> {
   const { filesystem } = await workThroughQueue(queue)
 
-  return detailsUtility(getEntrypoint(filesystem).specification)
+  return detailsUtility(getEntrypoint(filesystem)?.specification)
 }

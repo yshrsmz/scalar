@@ -14,7 +14,7 @@ describe('dereference', async () => {
     }`)
 
     expect(result.errors).toStrictEqual([])
-    expect(result.schema.info.title).toBe('Hello World')
+    expect(result.schema?.info?.title).toBe('Hello World')
   })
 
   it('dereferences an OpenAPI 3.0.0 file', async () => {
@@ -28,7 +28,7 @@ describe('dereference', async () => {
     }`)
 
     expect(result.errors).toStrictEqual([])
-    expect(result.schema.info.title).toBe('Hello World')
+    expect(result.schema?.info?.title).toBe('Hello World')
   })
 
   it('dereferences an Swagger 2.0 file', async () => {
@@ -42,7 +42,7 @@ describe('dereference', async () => {
     }`)
 
     expect(result.errors).toStrictEqual([])
-    expect(result.schema.info.title).toBe('Hello World')
+    expect(result.schema?.info?.title).toBe('Hello World')
   })
 
   it('returns version 3.1', async () => {
@@ -147,7 +147,7 @@ it('dereferences a simple reference', async () => {
 
   // Original
   expect(
-    result.specification.paths['/test'].get.responses['200'].content[
+    result.specification?.paths?.['/test']?.get?.responses?.['200']?.content[
       'application/json'
     ].schema,
   ).toEqual({
@@ -156,7 +156,7 @@ it('dereferences a simple reference', async () => {
 
   // Resolved references
   expect(
-    result.schema.paths['/test'].get.responses['200'].content[
+    result.schema?.paths?.['/test']?.get?.responses?.['200']?.content[
       'application/json'
     ].schema,
   ).toEqual({

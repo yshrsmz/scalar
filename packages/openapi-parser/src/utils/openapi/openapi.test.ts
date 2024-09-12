@@ -23,7 +23,7 @@ describe('pipeline', () => {
   it('load object', async () => {
     const { specification } = await openapi().load(example).get()
 
-    expect(specification.openapi).toBe('3.1.0')
+    expect(specification?.openapi).toBe('3.1.0')
   })
 
   it('load string', async () => {
@@ -31,7 +31,7 @@ describe('pipeline', () => {
       .load(JSON.stringify(example))
       .get()
 
-    expect(specification.openapi).toBe('3.1.0')
+    expect(specification?.openapi).toBe('3.1.0')
   })
 
   it('load file', async () => {
@@ -41,7 +41,7 @@ describe('pipeline', () => {
       })
       .get()
 
-    expect(specification.openapi).toBe('3.1.0')
+    expect(specification?.openapi).toBe('3.1.0')
   })
 
   it('load file + validate', async () => {
@@ -52,7 +52,7 @@ describe('pipeline', () => {
       .validate()
       .get()
 
-    expect(specification.openapi).toBe('3.1.0')
+    expect(specification?.openapi).toBe('3.1.0')
   })
 
   it('files', async () => {
@@ -88,7 +88,7 @@ describe('pipeline', () => {
       .upgrade()
       .get()
 
-    expect(specification.openapi).toBe('3.1.0')
+    expect(specification?.openapi).toBe('3.1.0')
   })
 
   it('details', async () => {
@@ -150,8 +150,8 @@ describe('pipeline', () => {
       .filter((schema) => !schema?.['x-internal'])
       .get()
 
-    expect(specification.paths['/'].get).toBeUndefined()
-    expect(specification.paths['/foobar'].get).not.toBeUndefined()
+    expect(specification?.paths['/'].get).toBeUndefined()
+    expect(specification?.paths['/foobar'].get).not.toBeUndefined()
   })
 
   it('filter tags', async () => {
@@ -189,8 +189,8 @@ describe('pipeline', () => {
       .filter((schema) => !schema?.tags?.includes('Beta'))
       .get()
 
-    expect(specification.paths['/'].get).toBeUndefined()
-    expect(specification.paths['/foobar'].get).not.toBeUndefined()
+    expect(specification?.paths['/'].get).toBeUndefined()
+    expect(specification?.paths['/foobar'].get).not.toBeUndefined()
   })
 
   it('upgrade > filter', async () => {
@@ -229,9 +229,9 @@ describe('pipeline', () => {
       .filter((schema) => !schema?.tags?.includes('Beta'))
       .get()
 
-    expect(specification.openapi).toBe('3.1.0')
-    expect(specification.paths['/'].get).toBeUndefined()
-    expect(specification.paths['/foobar'].get).not.toBeUndefined()
+    expect(specification?.openapi).toBe('3.1.0')
+    expect(specification?.paths['/'].get).toBeUndefined()
+    expect(specification?.paths['/foobar'].get).not.toBeUndefined()
   })
 
   it('validate', async () => {
@@ -258,7 +258,7 @@ describe('pipeline', () => {
   it('dereference', async () => {
     const result = await openapi().load(example).dereference().get()
 
-    expect(result.schema.info.title).toBe('Hello World')
+    expect(result.schema?.info?.title).toBe('Hello World')
   })
 
   it('validate > dereference', async () => {
@@ -266,7 +266,7 @@ describe('pipeline', () => {
 
     expect(result.valid).toBe(true)
     expect(result.errors).toStrictEqual([])
-    expect(result.schema.info.title).toBe('Hello World')
+    expect(result.schema?.info?.title).toBe('Hello World')
   })
 
   it('throws an error when dereference fails (global)', async () => {

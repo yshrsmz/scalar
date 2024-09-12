@@ -11,8 +11,12 @@ describe('getEntrypoint', () => {
 
     const entrypoint = getEntrypoint(result)
 
+    expect(entrypoint).not.toBeUndefined()
+
     // Modify the entrypoint
-    entrypoint.specification.foo = 'baz'
+    if (entrypoint?.specification) {
+      entrypoint.specification.foo = 'baz'
+    }
 
     // Check whether the original was modified
     expect(result[0].specification.foo).toBe('baz')

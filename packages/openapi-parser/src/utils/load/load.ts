@@ -74,7 +74,7 @@ export async function load(
       })
 
       return {
-        specification: null,
+        specification: undefined,
         filesystem: [],
         errors,
       }
@@ -95,14 +95,14 @@ export async function load(
     })
 
     return {
-      specification: null,
+      specification: undefined,
       filesystem: [],
       errors,
     }
   }
 
   let filesystem = makeFilesystem(content, {
-    filename: options?.filename ?? null,
+    filename: options?.filename,
   })
 
   // Get references from file system entry, or from the content
@@ -110,7 +110,7 @@ export async function load(
     ? filesystem.find((entry) => entry.filename === options?.filename)
     : getEntrypoint(filesystem)
 
-  const listOfReferences = newEntry.references ?? getListOfReferences(content)
+  const listOfReferences = newEntry?.references ?? getListOfReferences(content)
 
   // No other references
   if (listOfReferences.length === 0) {
@@ -153,7 +153,7 @@ export async function load(
       },
     )
 
-    errors.push(...newErrors)
+    errors.push(...(newErrors ?? []))
 
     filesystem = [
       ...filesystem,

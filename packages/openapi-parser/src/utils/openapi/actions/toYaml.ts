@@ -11,5 +11,5 @@ export async function toYaml<T extends Task[]>(
 ): Promise<string> {
   const { filesystem } = await workThroughQueue(queue)
 
-  return toYamlUtility(getEntrypoint(filesystem).specification)
+  return toYamlUtility(getEntrypoint(filesystem)?.specification)
 }

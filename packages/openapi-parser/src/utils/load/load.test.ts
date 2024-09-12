@@ -23,7 +23,7 @@ describe('load', async () => {
       },
     )
 
-    expect(getEntrypoint(filesystem).specification).toMatchObject({
+    expect(getEntrypoint(filesystem)?.specification).toMatchObject({
       openapi: '3.1.0',
       info: {
         title: 'Hello World',
@@ -48,7 +48,7 @@ describe('load', async () => {
       },
     )
 
-    expect(getEntrypoint(filesystem).specification).toMatchObject({
+    expect(getEntrypoint(filesystem)?.specification).toMatchObject({
       openapi: '3.1.0',
       info: {
         title: 'Hello World',
@@ -73,7 +73,7 @@ describe('load', async () => {
       },
     )
 
-    expect(getEntrypoint(filesystem).specification).toMatchObject({
+    expect(getEntrypoint(filesystem)?.specification).toMatchObject({
       openapi: '3.1.0',
       info: {
         title: 'Hello World',
@@ -93,7 +93,7 @@ describe('load', async () => {
       plugins: [readFiles(), fetchUrls()],
     })
 
-    expect(getEntrypoint(filesystem).specification).toMatchObject({
+    expect(getEntrypoint(filesystem)?.specification).toMatchObject({
       openapi: '3.1.0',
       info: {
         title: 'Hello World',
@@ -154,7 +154,7 @@ describe('load', async () => {
       plugins: [readFiles(), fetchUrls()],
     })
 
-    expect(getEntrypoint(filesystem).specification).toMatchObject({
+    expect(getEntrypoint(filesystem)?.specification).toMatchObject({
       openapi: '3.1.0',
       info: {
         title: 'Hello World',
@@ -198,7 +198,7 @@ describe('load', async () => {
       },
     )
 
-    expect(getEntrypoint(filesystem).specification).toMatchObject({
+    expect(getEntrypoint(filesystem)?.specification).toMatchObject({
       openapi: '3.1.0',
       info: {
         title: 'Hello World',
@@ -250,6 +250,7 @@ describe('load', async () => {
   })
 
   it('loads referenced urls', async () => {
+    // @ts-expect-error
     global.fetch = async (url: string) => {
       if (url === 'https://example.com/openapi.yaml') {
         return {

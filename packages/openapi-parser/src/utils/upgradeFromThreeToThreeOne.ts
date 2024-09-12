@@ -6,9 +6,11 @@ import { traverse } from './traverse'
  *
  * https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0
  */
-export function upgradeFromThreeToThreeOne(specification: AnyObject) {
+export function upgradeFromThreeToThreeOne(
+  specification: AnyObject | undefined,
+) {
   // Version
-  if (specification.openapi?.startsWith('3.0')) {
+  if (specification?.openapi?.startsWith('3.0')) {
     specification.openapi = '3.1.0'
   } else {
     // Skip if it’s something else than 3.0.x
@@ -99,8 +101,8 @@ export function upgradeFromThreeToThreeOne(specification: AnyObject) {
   })
 
   // Declaring $schema Dialects to protect against change
-  // if (typeof specification.$schema === 'undefined') {
-  //   specification.$schema = 'http://json-schema.org/draft-07/schema#'
+  // if (typeof specification?.$schema === 'undefined') {
+  //   specification?.$schema = 'http://json-schema.org/draft-07/schema#'
   // }
 
   return specification

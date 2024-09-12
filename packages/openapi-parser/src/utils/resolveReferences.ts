@@ -62,7 +62,7 @@ export function resolveReferences(
 
   // Recursively resolve all references
   resolve(
-    file?.specification ?? entrypoint.specification,
+    file?.specification ?? entrypoint?.specification,
     filesystem,
     file ?? entrypoint,
   )
@@ -70,7 +70,7 @@ export function resolveReferences(
   // If we replace references with content, that includes a reference, we can’t deal with that right-away.
   // That’s why we need a second run.
   resolve(
-    file?.specification ?? entrypoint.specification,
+    file?.specification ?? entrypoint?.specification,
     filesystem,
     file ?? entrypoint,
   )
@@ -89,18 +89,24 @@ export function resolveReferences(
     valid: errors.length === 0,
     errors: errors,
     schema: (file ?? getEntrypoint(filesystem))
-      .specification as OpenAPI.Document,
+      ?.specification as OpenAPI.Document,
   }
 
   /**
    * Resolves the circular reference to an object and deletes the $ref properties.
    */
   function resolve(
-    schema: AnyObject,
+    schema: AnyObject | undefined,
     resolveFilesystem: Filesystem,
-    resolveFile: FilesystemEntry,
+    resolveFile: FilesystemEntry | undefined,
   ): DereferenceResult {
     let result: DereferenceResult | undefined
+
+    if (schema === undefined) {
+      return {
+        errors: [],
+      }
+    }
 
     // Iterate over the whole objecct
     Object.entries(schema ?? {}).forEach(([_, value]) => {
@@ -158,9 +164,9 @@ function isCircular(schema: AnyObject) {
 function resolveUri(
   // 'foobar.json#/foo/bar'
   uri: string,
-  options: ThrowOnErrorOption,
+  options: ThrowOnErrorOption | undefined,
   // { filename: './foobar.json '}
-  file: FilesystemEntry,
+  file: FilesystemEntry | undefined,
   // [ { filename: './foobar.json '} ]
   filesystem: Filesystem,
   errors?: ErrorObject[],
@@ -169,6 +175,10 @@ function resolveUri(
   if (typeof uri !== 'string') {
     if (options?.throwOnError) {
       throw new Error(ERRORS.INVALID_REFERENCE.replace('%s', uri))
+    }
+
+    if (errors === undefined) {
+      errors = []
     }
 
     errors.push({
@@ -193,6 +203,10 @@ function resolveUri(
         throw new Error(
           ERRORS.EXTERNAL_REFERENCE_NOT_FOUND.replace('%s', prefix),
         )
+      }
+
+      if (errors === undefined) {
+        errors = []
       }
 
       errors.push({
@@ -231,11 +245,15 @@ function resolveUri(
   // Try to find the URI
   try {
     return segments.reduce((acc, key) => {
-      return acc[key]
-    }, file.specification)
+      return acc?.[key]
+    }, file?.specification)
   } catch (error) {
     if (options?.throwOnError) {
       throw new Error(ERRORS.INVALID_REFERENCE.replace('%s', uri))
+    }
+
+    if (errors === undefined) {
+      errors = []
     }
 
     errors.push({

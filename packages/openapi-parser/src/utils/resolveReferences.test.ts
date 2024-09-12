@@ -43,7 +43,9 @@ describe('resolveReferences', () => {
     const { schema } = resolveReferences(specification)
 
     // Assertion
-    expect(schema.paths['/foobar'].post.requestBody.content).not.toBe(undefined)
+    expect(schema.paths?.['/foobar']?.post?.requestBody.content).not.toBe(
+      undefined,
+    )
   })
 
   it('returns an error when a reference can’t be found', async () => {
@@ -149,9 +151,9 @@ describe('resolveReferences', () => {
     const newParser = resolveReferences(specification)
 
     // Assertion
-    expect(newParser.schema.paths['/foobar'].post.requestBody).toMatchObject(
-      oldSchema.paths['/foobar'].post.requestBody,
-    )
+    expect(
+      newParser.schema?.paths?.['/foobar']?.post?.requestBody,
+    ).toMatchObject(oldSchema.paths['/foobar'].post.requestBody)
   })
 
   it('resolves references inside references', async () => {
@@ -206,9 +208,9 @@ describe('resolveReferences', () => {
     const newParser = resolveReferences(specification)
 
     // Assertion
-    expect(newParser.schema.paths['/foobar'].post.requestBody).toMatchObject(
-      oldSchema.paths['/foobar'].post.requestBody,
-    )
+    expect(
+      newParser?.schema?.paths?.['/foobar']?.post?.requestBody,
+    ).toMatchObject(oldSchema.paths['/foobar'].post.requestBody)
   })
 
   it('resolves references in arrays', async () => {
@@ -255,7 +257,7 @@ describe('resolveReferences', () => {
 
     // Assertion
     expect(
-      schema.paths['/foobar'].post.requestBody.content['application/json']
+      schema.paths?.['/foobar']?.post?.requestBody.content['application/json']
         .schema.oneOf[0],
     ).toMatchObject({
       type: 'string',
@@ -307,7 +309,7 @@ describe('resolveReferences', () => {
 
     // Assertion
     expect(
-      schema.paths['/foobar'].post.requestBody.content['application/json']
+      schema.paths?.['/foobar']?.post?.requestBody.content['application/json']
         .schema.oneOf[0],
     ).toMatchObject({
       type: 'string',
@@ -378,8 +380,8 @@ describe('resolveReferences', () => {
     // Assertion
     expect(schema.swagger).toBe('2.0')
     expect(
-      schema.paths['/foobar'].post.responses[200].schema.properties.dictionaries
-        .additionalProperties,
+      schema.paths?.['/foobar']?.post?.responses?.[200]?.schema.properties
+        .dictionaries.additionalProperties,
     ).toMatchObject({
       properties: {
         cityCode: {
@@ -519,7 +521,7 @@ describe('resolveReferences', () => {
     const { schema } = resolveReferences(filesystem)
 
     expect(
-      schema.paths['/foobar'].post.requestBody.content['application/json']
+      schema.paths?.['/foobar']?.post?.requestBody.content['application/json']
         .schema.example,
     ).toBe('foobar')
   })
@@ -571,7 +573,7 @@ describe('resolveReferences', () => {
 
     const { schema } = resolveReferences(filesystem)
     expect(
-      schema.paths['/foobar'].post.requestBody.content['application/json']
+      schema.paths?.['/foobar']?.post?.requestBody.content['application/json']
         .schema.example,
     ).toBe('foobar')
   })
@@ -632,7 +634,7 @@ describe('resolveReferences', () => {
 
     const { schema } = resolveReferences(filesystem)
     expect(
-      schema.paths['/foobar'].post.requestBody.content['application/json']
+      schema.paths?.['/foobar']?.post?.requestBody.content['application/json']
         .schema.example,
     ).toBe('foobar')
   })

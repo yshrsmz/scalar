@@ -11,5 +11,5 @@ export async function toJson<T extends Task[]>(
 ): Promise<string | undefined> {
   const { filesystem } = await workThroughQueue(queue)
 
-  return toJsonUtility(getEntrypoint(filesystem).specification)
+  return toJsonUtility(getEntrypoint(filesystem)?.specification)
 }

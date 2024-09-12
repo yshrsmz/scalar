@@ -26,8 +26,8 @@ describe('validate', async () => {
 
     expect(result.errors).toBeTypeOf('object')
     expect(Array.isArray(result.errors)).toBe(true)
-    expect(result.errors.length).toBe(1)
-    expect(result.errors[0]).toMatchObject({
+    expect(result.errors?.length).toBe(1)
+    expect(result.errors?.[0]).toMatchObject({
       message: "must have required property 'info'",
     })
   })
@@ -36,7 +36,7 @@ describe('validate', async () => {
     const result = await validate('pineapples')
 
     expect(result.errors).toHaveLength(1)
-    expect(result.errors[0].message).toBe(
+    expect(result.errors?.[0].message).toBe(
       'Can’t find supported Swagger/OpenAPI version in specification, version must be a string.',
     )
   })
@@ -49,7 +49,7 @@ info:
 paths: {}
 `)
 
-    expect(result.schema.info.title).toBe('Hello World')
+    expect(result.schema?.info?.title).toBe('Hello World')
   })
 
   it('doesn’t work with OpenAPI 4.0.0', async () => {
@@ -63,13 +63,14 @@ paths: {}
     }`)
 
     expect(result.errors).toHaveLength(1)
-    expect(result.errors[0].message).toContain(
+    expect(result.errors?.[0].message).toContain(
       'Can’t find supported Swagger/OpenAPI version in specification',
     )
   })
 
   it('throws an error', async () => {
     expect(async () => {
+      // @ts-expect-error
       await validate(undefined, {
         throwOnError: true,
       })

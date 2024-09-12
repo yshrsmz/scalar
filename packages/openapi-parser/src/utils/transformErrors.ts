@@ -4,7 +4,10 @@ import { betterAjvErrors } from './betterAjvErrors'
 /**
  * Transforms ajv errors, finds the positions in the schema and returns an enriched format.
  */
-export function transformErrors(specification: AnyObject, errors: any) {
+export function transformErrors(
+  specification: AnyObject | undefined,
+  errors: any,
+) {
   // TODO: This should work with multiple files
 
   if (typeof errors === 'string') {
@@ -17,7 +20,7 @@ export function transformErrors(specification: AnyObject, errors: any) {
 
   return betterAjvErrors(specification, null, errors, {
     indent: 2,
-  }).map((error) => {
+  }).map((error: any) => {
     error.message = error.message.trim()
 
     return error

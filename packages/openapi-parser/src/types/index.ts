@@ -17,7 +17,7 @@ export type AnyApiDefinitionFormat = string | AnyObject
 
 export type LoadResult = {
   filesystem: Filesystem
-  specification: AnyObject
+  specification: AnyObject | undefined
   errors?: ErrorObject[]
 }
 
@@ -35,13 +35,13 @@ export type UpgradeResult<T extends OpenAPI.Document = OpenAPI.Document> = {
 }
 
 export type FilterResult = {
-  specification: AnyObject
+  specification: AnyObject | undefined
 }
 
 export type DetailsResult = {
-  version: OpenApiVersion
-  specificationType: string
-  specificationVersion: string
+  version: OpenApiVersion | undefined
+  specificationType: string | undefined
+  specificationVersion: string | undefined
 }
 
 export type DereferenceResult = {
@@ -73,7 +73,7 @@ export type FilesystemEntry = {
   dir: string
   isEntrypoint: boolean
   references: string[]
-  filename: string
+  filename: string | undefined
   specification: AnyObject
 }
 

@@ -25,9 +25,9 @@ export function betterAjvErrors(
 ) {
   const { indent = null, json = null } = options
 
-  const jsonRaw = json || JSON.stringify(data, null, indent)
+  const jsonRaw = json || JSON.stringify(data, null, indent || undefined)
 
-  const customErrorToStructure = (error) => error.getError()
+  const customErrorToStructure = (error: any) => error.getError()
   const customErrors = prettify(errors, {
     data,
     schema,

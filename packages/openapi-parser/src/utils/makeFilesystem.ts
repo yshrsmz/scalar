@@ -20,7 +20,7 @@ export function makeFilesystem(
     {
       isEntrypoint: true,
       specification,
-      filename: null,
+      filename: undefined,
       dir: './',
       references: getListOfReferences(specification),
       ...overwrites,

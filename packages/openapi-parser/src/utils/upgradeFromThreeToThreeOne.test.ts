@@ -13,7 +13,7 @@ describe('version', () => {
       paths: {},
     })
 
-    expect(result.swagger).toBe('2.0')
+    expect(result?.swagger).toBe('2.0')
   })
 
   it('changes the version to from 3.0.0 to 3.1.0', async () => {
@@ -26,7 +26,7 @@ describe('version', () => {
       paths: {},
     })
 
-    expect(result.openapi).toBe('3.1.0')
+    expect(result?.openapi).toBe('3.1.0')
   })
 
   it('changes the version to 3.0.3 to 3.1.0', async () => {
@@ -39,7 +39,7 @@ describe('version', () => {
       paths: {},
     })
 
-    expect(result.openapi).toBe('3.1.0')
+    expect(result?.openapi).toBe('3.1.0')
   })
 })
 
@@ -73,7 +73,7 @@ describe('nullable types', () => {
     })
 
     expect(
-      result.paths['/test'].get.responses['200'].content['application/json']
+      result?.paths['/test'].get.responses['200'].content['application/json']
         .schema,
     ).toEqual({
       type: ['null', 'string'],
@@ -114,7 +114,7 @@ describe('exclusiveMinimum and exclusiveMaximum', () => {
     })
 
     expect(
-      result.paths['/test'].get.responses['200'].content['application/json']
+      result?.paths['/test'].get.responses['200'].content['application/json']
         .schema,
     ).toEqual({
       type: 'integer',
@@ -154,7 +154,7 @@ describe('use examples not example', () => {
     })
 
     expect(
-      result.paths['/test'].get.responses['200'].content['application/json']
+      result?.paths['/test'].get.responses['200'].content['application/json']
         .schema,
     ).toEqual({
       type: 'integer',
@@ -192,7 +192,9 @@ describe('describing File Upload Payloads ', () => {
     })
 
     expect(
-      result.paths['/test'].get.requestBody.content['application/octet-stream'],
+      result?.paths['/test'].get.requestBody.content[
+        'application/octet-stream'
+      ],
     ).toEqual({})
   })
 
@@ -222,7 +224,9 @@ describe('describing File Upload Payloads ', () => {
     })
 
     expect(
-      result.paths['/test'].get.requestBody.content['application/octet-stream'],
+      result?.paths['/test'].get.requestBody.content[
+        'application/octet-stream'
+      ],
     ).toEqual({
       schema: {
         type: 'string',
@@ -262,7 +266,7 @@ describe('describing File Upload Payloads ', () => {
     })
 
     expect(
-      result.paths['/test'].get.requestBody.content['multipart/form-data'],
+      result?.paths['/test'].get.requestBody.content['multipart/form-data'],
     ).toEqual({
       schema: {
         type: 'object',
@@ -288,6 +292,6 @@ describe.skip('declaring $schema', () => {
       paths: {},
     })
 
-    expect(result.$schema).toBe('http://json-schema.org/draft-07/schema#')
+    expect(result?.$schema).toBe('http://json-schema.org/draft-07/schema#')
   })
 })

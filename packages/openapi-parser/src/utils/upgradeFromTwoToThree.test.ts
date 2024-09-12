@@ -13,8 +13,8 @@ describe('upgradeFromTwoToThree', () => {
       paths: {},
     })
 
-    expect(result.openapi).toBe('3.0.3')
-    expect(result.swagger).toBeUndefined()
+    expect(result?.openapi).toBe('3.0.3')
+    expect(result?.swagger).toBeUndefined()
   })
 
   it('upgrades URLs to new server syntax', async () => {
@@ -25,15 +25,15 @@ describe('upgradeFromTwoToThree', () => {
       host: 'api.example.com',
     })
 
-    expect(result.servers).toStrictEqual([
+    expect(result?.servers).toStrictEqual([
       {
         url: 'http://api.example.com/v1',
       },
     ])
 
-    expect(result.basePath).toBeUndefined()
-    expect(result.schemes).toBeUndefined()
-    expect(result.host).toBeUndefined()
+    expect(result?.basePath).toBeUndefined()
+    expect(result?.schemes).toBeUndefined()
+    expect(result?.host).toBeUndefined()
   })
 
   it('upgrades host to new server syntax', async () => {
@@ -42,15 +42,15 @@ describe('upgradeFromTwoToThree', () => {
       host: 'api.example.com',
     })
 
-    expect(result.servers).toStrictEqual([
+    expect(result?.servers).toStrictEqual([
       {
         url: 'http://api.example.com',
       },
     ])
 
-    expect(result.basePath).toBeUndefined()
-    expect(result.schemes).toBeUndefined()
-    expect(result.host).toBeUndefined()
+    expect(result?.basePath).toBeUndefined()
+    expect(result?.schemes).toBeUndefined()
+    expect(result?.host).toBeUndefined()
   })
 
   it('moves definitions to components', async () => {
@@ -69,7 +69,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.components?.schemas).toStrictEqual({
+    expect(result?.components?.schemas).toStrictEqual({
       Category: {
         type: 'object',
         properties: {
@@ -81,7 +81,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.definitions).toBeUndefined()
+    expect(result?.definitions).toBeUndefined()
   })
 
   it('rewrites $refs to definitions', async () => {
@@ -110,7 +110,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
     expect(
-      result.paths['/planets'].get.responses['200'].content['application/json']
+      result?.paths['/planets'].get.responses['200'].content['application/json']
         .schema.$ref,
     ).toBe('#/components/schemas/Planet')
   })
@@ -140,7 +140,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths).toStrictEqual({
+    expect(result?.paths).toStrictEqual({
       '/planets': {
         get: {
           description:
@@ -172,7 +172,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths['/planets'].get.produces).toBeUndefined()
+    expect(result?.paths['/planets'].get.produces).toBeUndefined()
   })
 
   it('uses global produces for responses', async () => {
@@ -200,7 +200,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths).toStrictEqual({
+    expect(result?.paths).toStrictEqual({
       '/planets': {
         get: {
           description:
@@ -232,7 +232,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths['/planets'].get.produces).toBeUndefined()
+    expect(result?.paths['/planets'].get.produces).toBeUndefined()
   })
 
   it('transforms requestBody', async () => {
@@ -262,7 +262,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths).toStrictEqual({
+    expect(result?.paths).toStrictEqual({
       '/planets': {
         get: {
           description:
@@ -287,7 +287,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths['/planets'].get.produces).toBeUndefined()
+    expect(result?.paths['/planets'].get.produces).toBeUndefined()
   })
 
   it('uses global consumes for requestBody', async () => {
@@ -317,7 +317,7 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths).toStrictEqual({
+    expect(result?.paths).toStrictEqual({
       '/planets': {
         get: {
           description:
@@ -342,6 +342,6 @@ describe('upgradeFromTwoToThree', () => {
       },
     })
 
-    expect(result.paths['/planets'].get.produces).toBeUndefined()
+    expect(result?.paths['/planets'].get.produces).toBeUndefined()
   })
 })

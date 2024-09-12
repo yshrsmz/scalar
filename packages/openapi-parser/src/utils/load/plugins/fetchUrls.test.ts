@@ -26,6 +26,7 @@ describe('fetchUrls', async () => {
   })
 
   it('fetches the URL', async () => {
+    // @ts-expect-error
     global.fetch = async (url: string) =>
       ({
         text: async () => {
@@ -43,6 +44,7 @@ describe('fetchUrls', async () => {
   })
 
   it('rewrites the URL', async () => {
+    // @ts-expect-error
     global.fetch = async (url: string) =>
       ({
         text: async () => {

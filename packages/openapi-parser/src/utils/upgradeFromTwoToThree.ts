@@ -8,9 +8,9 @@ import { traverse } from './traverse'
  *
  * https://swagger.io/blog/news/whats-new-in-openapi-3-0/
  */
-export function upgradeFromTwoToThree(specification: AnyObject) {
+export function upgradeFromTwoToThree(specification: AnyObject | undefined) {
   // Version
-  if (specification.swagger?.startsWith('2.0')) {
+  if (specification?.swagger?.startsWith('2.0')) {
     specification.openapi = '3.0.3'
     delete specification.swagger
   } else {
@@ -23,13 +23,13 @@ export function upgradeFromTwoToThree(specification: AnyObject) {
   )
 
   // Servers
-  if (specification.host) {
+  if (specification?.host) {
     const schemes = specification.schemes?.length
       ? specification.schemes
       : ['http']
 
     specification.servers = schemes.map((scheme: string[]) => ({
-      url: `${scheme}://${specification.host}${specification.basePath ?? ''}`,
+      url: `${scheme}://${specification?.host}${specification?.basePath ?? ''}`,
     }))
 
     delete specification.basePath
@@ -61,8 +61,8 @@ export function upgradeFromTwoToThree(specification: AnyObject) {
   }
 
   // Paths
-  if (specification.paths) {
-    for (const path in specification.paths) {
+  if (specification?.paths) {
+    for (const path in specification?.paths) {
       if (Object.hasOwn(specification.paths, path)) {
         const pathItem = specification.paths[path]
 

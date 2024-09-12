@@ -8,7 +8,8 @@ import { loadCommand } from './commands/loadCommand'
 export function openapi(globalOptions?: OpenApiOptions) {
   // Create a new queue
   const queue = {
-    input: null,
+    input: '',
+    specification: {},
     options: globalOptions,
     tasks: [],
   } as Queue<[]>
