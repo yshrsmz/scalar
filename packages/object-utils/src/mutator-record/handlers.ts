@@ -1,7 +1,7 @@
 import { Mutation } from '@/mutator-record/mutations'
 import type { Path, PathValue } from '@/nested'
 import { useDebounceFn } from '@vueuse/core'
-import { parse, stringify } from 'flatted'
+import { stringify } from 'flatted'
 
 import { LS_CONFIG } from './local-storage'
 
@@ -44,31 +44,9 @@ export function mutationFactory<
   }
 
   /**
-   * Load the previous entity map state from localStorage into the active state
-   *
-   * @param previousVersion the version from when the localStorage was saved
-   * @param currentVersion current version of the running app
+   * Loads localStorage data into the mutator after migration
    */
-  const loadLocalStorage = (
-    previousVersion: string,
-    currentVersion: string,
-  ) => {
-    if (!localStorageKey) return
-
-    // 0.0.0 -> 2.1.0 migration
-    // if (!previousVersion ++ )
-
-    const lsItem = localStorage.getItem(localStorageKey)
-
-    // TODO: we can remove this when we get out of beta
-    const data =
-      // Check for the new data structure to support the old ones
-      lsItem?.[0] === '['
-        ? parse(localStorage.getItem(localStorageKey) || '[{}]')
-        : JSON.parse(localStorage.getItem(localStorageKey) || '{}')
-
-    const instances = Object.values(data) as T[]
-
+  const loadLocalStorage = (instances: T[]) => {
     // TODO: Validation should be provided for each entity
     instances.forEach(add)
   }
