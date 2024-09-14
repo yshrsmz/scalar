@@ -43,12 +43,24 @@ export function mutationFactory<
     onChange()
   }
 
-  /** Load the previous entity map state from localStorage into the active state */
-  const loadLocalStorage = () => {
+  /**
+   * Load the previous entity map state from localStorage into the active state
+   *
+   * @param previousVersion the version from when the localStorage was saved
+   * @param currentVersion current version of the running app
+   */
+  const loadLocalStorage = (
+    previousVersion: string,
+    currentVersion: string,
+  ) => {
     if (!localStorageKey) return
+
+    // 0.0.0 -> 2.1.0 migration
+    // if (!previousVersion ++ )
 
     const lsItem = localStorage.getItem(localStorageKey)
 
+    // TODO: we can remove this when we get out of beta
     const data =
       // Check for the new data structure to support the old ones
       lsItem?.[0] === '['

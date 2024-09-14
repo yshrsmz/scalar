@@ -19,16 +19,19 @@ export const loadAllResources = (mutators: ReturnType<typeof useWorkspace>) => {
     workspaceMutators,
   } = mutators
 
+  const previousVersion = localStorage.getItem('version') ?? '0.0.0'
+  const currentVersion = import.meta.env.PACKAGE_VERSION
+
   try {
-    collectionMutators.loadLocalStorage()
-    cookieMutators.loadLocalStorage()
-    environmentMutators.loadLocalStorage()
-    tagMutators.loadLocalStorage()
-    requestExampleMutators.loadLocalStorage()
-    requestMutators.loadLocalStorage()
-    serverMutators.loadLocalStorage()
-    securitySchemeMutators.loadLocalStorage()
-    workspaceMutators.loadLocalStorage()
+    collectionMutators.loadLocalStorage(previousVersion, currentVersion)
+    cookieMutators.loadLocalStorage(previousVersion, currentVersion)
+    environmentMutators.loadLocalStorage(previousVersion, currentVersion)
+    tagMutators.loadLocalStorage(previousVersion, currentVersion)
+    requestExampleMutators.loadLocalStorage(previousVersion, currentVersion)
+    requestMutators.loadLocalStorage(previousVersion, currentVersion)
+    serverMutators.loadLocalStorage(previousVersion, currentVersion)
+    securitySchemeMutators.loadLocalStorage(previousVersion, currentVersion)
+    workspaceMutators.loadLocalStorage(previousVersion, currentVersion)
 
     // Set localStorage version for future migrations
     localStorage.setItem('version', import.meta.env.PACKAGE_VERSION)
