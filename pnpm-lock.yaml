@@ -1531,7 +1531,7 @@ importers:
         specifier: ^3.4.29
         version: 3.4.31(typescript@5.5.2)
       yaml:
-        specifier: ^2.5.1
+        specifier: ^2.4.5
         version: 2.5.1
 
   packages/galaxy:
@@ -1768,7 +1768,7 @@ importers:
         specifier: ^5.0.7
         version: 5.0.7
       yaml:
-        specifier: ^2.5.1
+        specifier: ^2.4.5
         version: 2.5.1
       zod:
         specifier: ^3.22.4
@@ -1839,7 +1839,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       yaml:
-        specifier: ^2.5.1
+        specifier: ^2.4.5
         version: 2.5.1
     devDependencies:
       '@apidevtools/swagger-parser':
