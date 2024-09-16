@@ -32,7 +32,11 @@ const entities = [
   { identifier: 'Workspace', schema: workspaceSchema },
 ]
 
-// Export the types in a namespace
+/**
+ * Export the types in a namespace
+ * TODO:
+ * - go back to typescript compiler api and print pretty types
+ */
 let typeString = entities.reduce(
   (prev, { identifier, schema }) => {
     const { node } = zodToTs(schema, identifier)
@@ -45,7 +49,6 @@ let typeString = entities.reduce(
 
 // Add all types data object
 typeString += `export type Data = { 
-  version: '${VERSION}'
   collections: Collection[]
   cookies: Cookie[]
   environments: Environment[]
