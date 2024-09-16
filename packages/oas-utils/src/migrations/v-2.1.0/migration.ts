@@ -1,33 +1,38 @@
-import type {
-  Collection,
-  Cookie,
-  Environment,
-  Folder,
-  Request,
-  RequestExample,
-  Server,
-  Workspace,
-} from '../v-0.0.0/types.generated'
+import { parseLocalStorage } from '@/migrations/parse-local-storage'
+import type { v_0_0_0 } from '@/migrations/v-0.0.0/types.generated'
 
-// const data =
-//   // Check for the new data structure to support the old ones
-//   lsItem?.[0] === '['
-//     ? parse(localStorage.getItem(localStorageKey) || '[{}]')
-//     : JSON.parse(localStorage.getItem(localStorageKey) || '{}')
-//
-// const instances = Object.values(data) as T[]
+import type { v_2_1_0 } from './types.generated'
 
 /** V-0.0.0 to V-2.1.0 migration */
-export const nineCarsDecide = {
-  collection: () => {
-    return []
-  },
-  cookie: () => {},
-  environment: () => {},
-  request: () => {},
-  requestExample: () => {},
-  securityScheme: () => {},
-  server: () => {},
-  tag: () => {},
-  workspace: () => {},
+export const migrate_v_2_1_0 = (data: v_0_0_0.Data) => {
+  // Augment the previous data
+  const prev = {
+    ...data,
+    // @ts-expect-error Tags used to be called folders
+    folders: parseLocalStorage('folder'),
+  } satisfies v_0_0_0.Data
+
+  const collections = prev.collections.map((c) => {
+    console.log(c)
+    return {
+      type: 'collection',
+      openapi: c.spec?.openapi,
+      info: c.spec?.info,
+      security: c.spec?.security,
+      externalDocs: c.spec?.externalDocs,
+      uid: c.uid,
+    } satisfies v_2_1_0.Collection
+  })
+
+  return {
+    collections,
+    cookies: [],
+    environments: [],
+    requestExamples: [],
+    requests: [],
+    securitySchemes: [],
+    servers: [],
+    tags: [],
+    workspaces: [],
+  } satisfies v_2_1_0.Data
 }

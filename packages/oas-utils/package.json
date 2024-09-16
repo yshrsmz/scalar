@@ -27,8 +27,8 @@
     "lint:fix": "eslint .  --fix",
     "preview": "vite preview",
     "test": "vitest",
-    "typegen:migration": "vite-node ./src/migrations/generate-types.ts",
     "test:unit": "vitest .",
+    "typegen:migration": "vite-node ./src/migrations/generate-types.ts",
     "types:build": "scalar-types-build",
     "types:check": "scalar-types-check"
   },
@@ -103,6 +103,7 @@
     "@scalar/openapi-types": "workspace:*",
     "@scalar/themes": "workspace:*",
     "@scalar/types": "workspace:*",
+    "flatted": "^3.3.1",
     "microdiff": "^1.4.0",
     "nanoid": "^5.0.7",
     "yaml": "^2.4.5",

@@ -29,12 +29,28 @@ const entities = [
   { identifier: 'Workspace', schema: workspaceSchema },
 ]
 
-const typeString = entities.reduce((prev, { identifier, schema }) => {
+// Export the types in a namespace
+let typeString = entities.reduce((prev, { identifier, schema }) => {
   const { node } = zodToTs(schema, identifier)
   const typeAlias = createTypeAlias(node, identifier)
   const nodeString = 'export ' + printNode(typeAlias) + '\n\n'
   return prev + nodeString
-}, '')
+}, 'export namespace v_2_1_0 {\n')
+
+// Add all types data object
+typeString += `export type Data = { 
+  collections: Collection[]
+  cookies: Cookie[]
+  environments: Environment[]
+  requestExamples: RequestExample[]
+  requests: Request[]
+  securitySchemes: SecurityScheme[]
+  servers: Server[]
+  tags: Tag[]
+  workspaces: Workspace[]
+}
+}
+`
 
 // Write to file
 writeFile(

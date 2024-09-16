@@ -1,5 +1,4 @@
 import type { useWorkspace } from '@/store'
-import { LS_KEYS } from '@/store/local-storage'
 import { migrator } from '@scalar/oas-utils/migrations'
 
 /**
@@ -22,38 +21,29 @@ export const loadAllResources = (mutators: ReturnType<typeof useWorkspace>) => {
   } = mutators
 
   try {
-    const appVersion = import.meta.env.PACKAGE_VERSION
     const dataVersion = localStorage.getItem('version') ?? '0.0.0'
-    const payload = {
-      appVersion,
-      dataVersion,
-    }
 
-    const collections = migrator(LS_KEYS.COLLECTION, payload)
+    // Hit our local storage data migrator
+    const {
+      collections,
+      cookies,
+      environments,
+      requestExamples,
+      requests,
+      servers,
+      securitySchemes,
+      tags,
+      workspaces,
+    } = migrator(dataVersion)
+
     collectionMutators.loadLocalStorage(collections)
-
-    const cookies = migrator(LS_KEYS.COOKIE, payload)
     cookieMutators.loadLocalStorage(cookies)
-
-    const environments = migrator(LS_KEYS.ENVIRONMENT, payload)
     environmentMutators.loadLocalStorage(environments)
-
-    const requestExamples = migrator(LS_KEYS.REQUEST_EXAMPLE, payload)
     requestExampleMutators.loadLocalStorage(requestExamples)
-
-    const requests = migrator(LS_KEYS.REQUEST, payload)
     requestMutators.loadLocalStorage(requests)
-
-    const servers = migrator(LS_KEYS.SERVER, payload)
     serverMutators.loadLocalStorage(servers)
-
-    const securitySchemes = migrator(LS_KEYS.SECURITY_SCHEME, payload)
     securitySchemeMutators.loadLocalStorage(securitySchemes)
-
-    const tags = migrator(LS_KEYS.TAG, payload)
     tagMutators.loadLocalStorage(tags)
-
-    const workspaces = migrator(LS_KEYS.WORKSPACE, payload)
     workspaceMutators.loadLocalStorage(workspaces)
 
     // Set localStorage version for future migrations
