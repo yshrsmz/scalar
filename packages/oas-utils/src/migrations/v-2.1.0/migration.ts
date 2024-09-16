@@ -4,7 +4,7 @@ import type { v_0_0_0 } from '@/migrations/v-0.0.0/types.generated'
 import type { v_2_1_0 } from './types.generated'
 
 /** V-0.0.0 to V-2.1.0 migration */
-export const migrate_v_2_1_0 = (data: v_0_0_0.Data) => {
+export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
   // Augment the previous data
   const prev = {
     ...data,

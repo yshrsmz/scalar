@@ -1,6 +1,6 @@
 import { parseLocalStorage } from '@/migrations/parse-local-storage'
 import { semverLessThan } from '@/migrations/semver'
-import { migrate_v_2_1_0 } from '@/migrations/v-2.1.0'
+import { migrate_v_2_1_0, type v_2_1_0 } from '@/migrations/v-2.1.0'
 
 /** Handles all data migrations per entity */
 export const migrator = (dataVersion: string) => {
@@ -14,12 +14,11 @@ export const migrator = (dataVersion: string) => {
     securitySchemes: parseLocalStorage('securityScheme'),
     servers: parseLocalStorage('server'),
     tags: parseLocalStorage('tag'),
-    workspace: parseLocalStorage('workspace'),
-  }
+    workspaces: parseLocalStorage('workspace'),
+  } as any
 
   // 0.0.0 -> 2.1.0 migration
-  // Doesn't require data as its the first migration
   if (semverLessThan(dataVersion, '2.1.0')) data = migrate_v_2_1_0(data)
 
-  return data
+  return data as v_2_1_0.Data
 }

@@ -17,6 +17,9 @@ console.warn(
 )
 console.info('Generating...')
 
+/** Ensure we update this every migration */
+const VERSION = '2.1.0'
+
 const entities = [
   { identifier: 'Collection', schema: collectionSchema },
   { identifier: 'Cookie', schema: cookieSchema },
@@ -30,15 +33,19 @@ const entities = [
 ]
 
 // Export the types in a namespace
-let typeString = entities.reduce((prev, { identifier, schema }) => {
-  const { node } = zodToTs(schema, identifier)
-  const typeAlias = createTypeAlias(node, identifier)
-  const nodeString = 'export ' + printNode(typeAlias) + '\n\n'
-  return prev + nodeString
-}, 'export namespace v_2_1_0 {\n')
+let typeString = entities.reduce(
+  (prev, { identifier, schema }) => {
+    const { node } = zodToTs(schema, identifier)
+    const typeAlias = createTypeAlias(node, identifier)
+    const nodeString = 'export ' + printNode(typeAlias) + '\n\n'
+    return prev + nodeString
+  },
+  `export namespace v_${VERSION.replace(/\./g, '_')} {\n`,
+)
 
 // Add all types data object
 typeString += `export type Data = { 
+  version: '${VERSION}'
   collections: Collection[]
   cookies: Cookie[]
   environments: Environment[]
@@ -54,7 +61,7 @@ typeString += `export type Data = {
 
 // Write to file
 writeFile(
-  __dirname + '/v-2.1.0/types.generated.ts',
+  __dirname + `/v-${VERSION}/types.generated.ts`,
   typeString,
   { flag: 'w' },
   (err) => (err ? console.error(err) : console.log('Generation complete!')),
