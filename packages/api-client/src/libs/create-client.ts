@@ -2,6 +2,7 @@ import { loadAllResources } from '@/libs/local-storage'
 import { createWorkspaceStore } from '@/store'
 import type { RequestMethod } from '@scalar/oas-utils/entities/spec'
 import { LS_KEYS, objectMerge } from '@scalar/oas-utils/helpers'
+import { DATA_VERSION } from '@scalar/oas-utils/migrations'
 import type { ThemeId } from '@scalar/themes'
 import type {
   AuthenticationState,
@@ -126,7 +127,7 @@ export const createApiClient = ({
       proxyUrl: 'https://proxy.scalar.com',
     })
 
-    localStorage.setItem('version', import.meta.env.PACKAGE_VERSION)
+    localStorage.setItem('version', DATA_VERSION)
   }
 
   const app = createApp(appComponent)

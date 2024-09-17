@@ -9,6 +9,7 @@ import {
 } from '@/entities/spec'
 import { tagSchema } from '@/entities/spec/spec-objects'
 import { workspaceSchema } from '@/entities/workspace'
+import { DATA_VERSION } from '@/migrations/data-version'
 import { writeFile } from 'fs'
 import { createTypeAlias, printNode, zodToTs } from 'zod-to-ts'
 
@@ -16,9 +17,6 @@ console.warn(
   'Make sure the generate types file is updated for the current version',
 )
 console.info('Generating...')
-
-/** Ensure we update this every migration */
-const VERSION = '2.1.0'
 
 const entities = [
   { identifier: 'Collection', schema: collectionSchema },
@@ -44,27 +42,27 @@ let typeString = entities.reduce(
     const nodeString = 'export ' + printNode(typeAlias) + '\n\n'
     return prev + nodeString
   },
-  `export namespace v_${VERSION.replace(/\./g, '_')} {\n`,
+  `export namespace v_${DATA_VERSION.replace(/\./g, '_')} {\n`,
 )
 
 // Add all types data object
 typeString += `export type Data = { 
-  collections: Collection[]
-  cookies: Cookie[]
-  environments: Environment[]
-  requestExamples: RequestExample[]
-  requests: Request[]
-  securitySchemes: SecurityScheme[]
-  servers: Server[]
-  tags: Tag[]
-  workspaces: Workspace[]
+  collections: Record<string, Collection>
+  cookies: Record<string, Cookie>
+  environments: Record<string, Environment>
+  requestExamples: Record<string, RequestExample>
+  requests: Record<string, Request>
+  securitySchemes: Record<string, SecurityScheme>
+  servers: Record<string, Server>
+  tags: Record<string, Tag>
+  workspaces: Record<string, Workspace>
 }
 }
 `
 
 // Write to file
 writeFile(
-  __dirname + `/v-${VERSION}/types.generated.ts`,
+  __dirname + `/v-${DATA_VERSION}/types.generated.ts`,
   typeString,
   { flag: 'w' },
   (err) => (err ? console.error(err) : console.log('Generation complete!')),

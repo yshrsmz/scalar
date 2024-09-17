@@ -1,4 +1,4 @@
-import { parseLocalStorage } from '@/migrations/parse-local-storage'
+import { parseLocalStorage } from '@/migrations/local-storage'
 import type { v_0_0_0 } from '@/migrations/v-0.0.0/types.generated'
 
 import type { v_2_1_0 } from './types.generated'
@@ -8,35 +8,61 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
   console.info('Performing data migration v-0.0.0 to v-2.1.0')
 
   // Augment the previous data
-  const prev = {
+  const oldData = {
     ...data,
     // @ts-expect-error Tags used to be called folders
     folders: parseLocalStorage('folder'),
   } as v_0_0_0.Data
 
-  const collections = prev.collections.map(
-    (c) =>
-      ({
-        type: 'collection',
-        openapi: c.spec?.openapi,
-        info: c.spec?.info,
-        security: c.spec?.security,
-        externalDocs: c.spec?.externalDocs,
-        uid: c.uid,
-        securitySchemes: Object.values(c.securitySchemeDict ?? {}),
-        selectedServerUid: c.selectedServerUid,
-        servers: c.spec?.serverUids,
-        // TODO grab request UIDs
-        // requests
-        // tags
-        // auth
-        children: c.childUids,
-      }) satisfies v_2_1_0.Collection,
-  )
+  /** To grab requests and tags we must traverse children */
+  const flattenChildren = (childUids: string[]) =>
+    childUids.reduce(
+      (prev, uid) => {
+        if (oldData.requests[uid]) prev.requests.push(uid)
+        else if (oldData.folders[uid]) {
+          const { requests, tags } = flattenChildren(
+            oldData.folders[uid].childUids ?? [],
+          )
+          prev.requests.push(...requests)
+          prev.tags.push(uid, ...tags)
+        }
 
-  const cookies = prev.cookies satisfies v_2_1_0.Cookie[]
+        return prev
+      },
+      { requests: [] as string[], tags: [] as string[] },
+    )
 
-  const environments = prev.environments.map(
+  // Collections
+  const collections = Object.values(oldData.collections ?? {}).map((c) => {
+    const { requests, tags } = flattenChildren(c.childUids ?? [])
+    console.log(requests)
+    console.log(tags)
+
+    const auth = {}
+    return {
+      type: 'collection',
+      openapi: c.spec?.openapi,
+      info: c.spec?.info,
+      security: c.spec?.security,
+      externalDocs: c.spec?.externalDocs,
+      uid: c.uid,
+      securitySchemes: Object.values(c.securitySchemeDict ?? {}),
+      selectedServerUid: c.selectedServerUid,
+      servers: c.spec?.serverUids,
+      requests,
+      tags,
+      auth,
+      children: c.childUids,
+    } satisfies v_2_1_0.Collection
+  })
+
+  // Cookies
+  const cookies = Object.values(
+    oldData.cookies ?? {},
+  ) satisfies v_2_1_0.Cookie[]
+
+  // Environments
+  const environments = Object.values(oldData.environments ?? {}).map(
     (e) =>
       ({
         uid: e.uid,
@@ -47,7 +73,8 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
       }) satisfies v_2_1_0.Environment,
   )
 
-  const requests = prev.requests.map((r) => {
+  // Requests
+  const requests = Object.values(oldData.requests ?? {}).map((r) => {
     // Convert parameters
     const parameters: v_2_1_0.Request['parameters'] = [
       ...Object.values(r.parameters?.path ?? {}),
@@ -73,14 +100,22 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
     } satisfies v_2_1_0.Request
   })
 
-  const requestExamples = prev.requestExamples.map(
-    (e) => ({}) satisfies v_2_1_0.RequestExample,
+  // Request Examples
+  const requestExamples = Object.values(oldData.requestExamples ?? {}).map(
+    (e) =>
+      ({
+        ...e,
+        type: 'requestExample',
+      }) satisfies v_2_1_0.RequestExample,
   )
 
-  const securitySchemes =
-    prev.securitySchemes satisfies v_2_1_0.SecurityScheme[]
+  // Security Schemes
+  const securitySchemes = Object.values(
+    oldData.securitySchemes ?? {},
+  ) satisfies v_2_1_0.SecurityScheme[]
 
-  const servers = prev.servers.map(
+  // Servers
+  const servers = Object.values(oldData.servers ?? {}).map(
     (s) =>
       ({
         ...s,
@@ -88,7 +123,8 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
       }) satisfies v_2_1_0.Server,
   )
 
-  const tags = prev.folders.map(
+  // Tags
+  const tags = Object.values(oldData.folders ?? {}).map(
     (f) =>
       ({
         type: 'tag',
@@ -99,7 +135,8 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
       }) satisfies v_2_1_0.Tag,
   )
 
-  const workspaces = prev.workspaces.map(
+  // Workspaces
+  const workspaces = Object.values(oldData.workspaces ?? {}).map(
     (w) =>
       ({
         ...w,

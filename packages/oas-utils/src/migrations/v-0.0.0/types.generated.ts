@@ -109,7 +109,7 @@ export namespace v_0_0_0 {
         encoding?: 'form-data' | 'urlencoded'
         value?: {
           key?: string
-          value?: string | number
+          value?: string
           enabled?: boolean
           file?:
             | {
@@ -141,49 +141,15 @@ export namespace v_0_0_0 {
           nullable?: boolean | undefined
         }[]
       }
-      binary?:
-        | {
-            name: string
-            lastModified: number
-            webkitRelativePath: string
-            size: number
-            type: string
-            arrayBuffer: (...args_0: unknown[]) => Promise<any>
-            slice: (
-              args_0: number | undefined,
-              args_1: number | undefined,
-              args_2: string | undefined,
-              ...args_3: unknown[]
-            ) => any
-            stream: (...args_0: unknown[]) => any
-            text: (...args_0: unknown[]) => Promise<string>
-          }
-        | undefined
+      binary?: any | undefined
       activeBody?: 'raw' | 'formData' | 'binary'
     }
     parameters?: {
       path?: {
         key?: string
-        value?: string | number
+        value?: string
         enabled?: boolean
-        file?:
-          | {
-              name: string
-              lastModified: number
-              webkitRelativePath: string
-              size: number
-              type: string
-              arrayBuffer: (...args_0: unknown[]) => Promise<any>
-              slice: (
-                args_0: number | undefined,
-                args_1: number | undefined,
-                args_2: string | undefined,
-                ...args_3: unknown[]
-              ) => any
-              stream: (...args_0: unknown[]) => any
-              text: (...args_0: unknown[]) => Promise<string>
-            }
-          | undefined
+        file?: any | undefined
         description?: string | undefined
         refUid?: string | undefined
         required?: boolean | undefined
@@ -197,26 +163,9 @@ export namespace v_0_0_0 {
       }[]
       query?: {
         key?: string
-        value?: string | number
+        value?: string
         enabled?: boolean
-        file?:
-          | {
-              name: string
-              lastModified: number
-              webkitRelativePath: string
-              size: number
-              type: string
-              arrayBuffer: (...args_0: unknown[]) => Promise<any>
-              slice: (
-                args_0: number | undefined,
-                args_1: number | undefined,
-                args_2: string | undefined,
-                ...args_3: unknown[]
-              ) => any
-              stream: (...args_0: unknown[]) => any
-              text: (...args_0: unknown[]) => Promise<string>
-            }
-          | undefined
+        file?: any | undefined
         description?: string | undefined
         refUid?: string | undefined
         required?: boolean | undefined
@@ -230,26 +179,9 @@ export namespace v_0_0_0 {
       }[]
       headers?: {
         key?: string
-        value?: string | number
+        value?: string
         enabled?: boolean
-        file?:
-          | {
-              name: string
-              lastModified: number
-              webkitRelativePath: string
-              size: number
-              type: string
-              arrayBuffer: (...args_0: unknown[]) => Promise<any>
-              slice: (
-                args_0: number | undefined,
-                args_1: number | undefined,
-                args_2: string | undefined,
-                ...args_3: unknown[]
-              ) => any
-              stream: (...args_0: unknown[]) => any
-              text: (...args_0: unknown[]) => Promise<string>
-            }
-          | undefined
+        file?: any | undefined
         description?: string | undefined
         refUid?: string | undefined
         required?: boolean | undefined
@@ -263,26 +195,9 @@ export namespace v_0_0_0 {
       }[]
       cookies?: {
         key?: string
-        value?: string | number
+        value?: string
         enabled?: boolean
-        file?:
-          | {
-              name: string
-              lastModified: number
-              webkitRelativePath: string
-              size: number
-              type: string
-              arrayBuffer: (...args_0: unknown[]) => Promise<any>
-              slice: (
-                args_0: number | undefined,
-                args_1: number | undefined,
-                args_2: string | undefined,
-                ...args_3: unknown[]
-              ) => any
-              stream: (...args_0: unknown[]) => any
-              text: (...args_0: unknown[]) => Promise<string>
-            }
-          | undefined
+        file?: any | undefined
         description?: string | undefined
         refUid?: string | undefined
         required?: boolean | undefined
@@ -527,14 +442,14 @@ export namespace v_0_0_0 {
   }
 
   export type Data = {
-    collections: Collection[]
-    cookies: Cookie[]
-    environments: Environment[]
-    folders: Folder[]
-    requestExamples: RequestExample[]
-    requests: Request[]
-    securitySchemes: SecurityScheme[]
-    servers: Server[]
-    workspaces: Workspace[]
+    collections: Record<string, Collection>
+    cookies: Record<string, Cookie>
+    environments: Record<string, Environment>
+    folders: Record<string, Folder>
+    requestExamples: Record<string, RequestExample>
+    requests: Record<string, Request>
+    securitySchemes: Record<string, SecurityScheme>
+    servers: Record<string, Server>
+    workspaces: Record<string, Workspace>
   }
 }
