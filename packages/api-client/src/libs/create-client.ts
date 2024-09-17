@@ -125,6 +125,8 @@ export const createApiClient = ({
       isReadOnly,
       proxyUrl: 'https://proxy.scalar.com',
     })
+
+    localStorage.setItem('version', import.meta.env.PACKAGE_VERSION)
   }
 
   const app = createApp(appComponent)

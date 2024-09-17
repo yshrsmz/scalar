@@ -21,8 +21,6 @@ export const loadAllResources = (mutators: ReturnType<typeof useWorkspace>) => {
   } = mutators
 
   try {
-    const dataVersion = localStorage.getItem('version') ?? '0.0.0'
-
     // Hit our local storage data migrator
     const {
       collections,
@@ -34,8 +32,9 @@ export const loadAllResources = (mutators: ReturnType<typeof useWorkspace>) => {
       securitySchemes,
       tags,
       workspaces,
-    } = migrator(dataVersion)
+    } = migrator()
 
+    // We run through schemaModel out here since we will only have the most current models
     collectionMutators.loadLocalStorage(collections)
     cookieMutators.loadLocalStorage(cookies)
     environmentMutators.loadLocalStorage(environments)

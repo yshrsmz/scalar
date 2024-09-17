@@ -35,7 +35,7 @@ const entities = [
 /**
  * Export the types in a namespace
  * TODO:
- * - go back to typescript compiler api and print pretty types
+ * - go back to typescript compiler api and print pretty types as these ones are optional
  */
 let typeString = entities.reduce(
   (prev, { identifier, schema }) => {

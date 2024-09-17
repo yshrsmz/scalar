@@ -5,6 +5,8 @@ import type { v_2_1_0 } from './types.generated'
 
 /** V-0.0.0 to V-2.1.0 migration */
 export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
+  console.info('Performing data migration v-0.0.0 to v-2.1.0')
+
   // Augment the previous data
   const prev = {
     ...data,
@@ -62,8 +64,21 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
       security: r.security,
       requestBody: r.requestBody,
       parameters,
+      type: 'request',
+      uid: r.uid,
+      path: r.path,
+      method: (r.method?.toLowerCase() as v_2_1_0.Request['method']) ?? 'get',
+      examples: r.childUids,
+      selectedSecuritySchemeUids: r.selectedSecuritySchemeUids,
     } satisfies v_2_1_0.Request
   })
+
+  const requestExamples = prev.requestExamples.map(
+    (e) => ({}) satisfies v_2_1_0.RequestExample,
+  )
+
+  const securitySchemes =
+    prev.securitySchemes satisfies v_2_1_0.SecurityScheme[]
 
   const servers = prev.servers.map(
     (s) =>
@@ -98,9 +113,9 @@ export const migrate_v_2_1_0 = (data: Omit<v_0_0_0.Data, 'folders'>) => {
     collections,
     cookies,
     environments,
-    requestExamples: [],
+    requestExamples,
     requests,
-    securitySchemes: [],
+    securitySchemes,
     servers,
     tags,
     workspaces,
