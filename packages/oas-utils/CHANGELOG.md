@@ -1,5 +1,14 @@
 # @scalar/oas-utils
 
+## 0.2.44
+
+### Patch Changes
+
+- 9cd23e3: Generate examples for schemas with `anyOf` defined when `type` is not defined
+- Updated dependencies [121bc7e]
+  - @scalar/themes@0.9.30
+  - @scalar/types@0.0.9
+
 ## 0.2.43
 
 ### Patch Changes

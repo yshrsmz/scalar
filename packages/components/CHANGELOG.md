@@ -1,5 +1,13 @@
 # @scalar/components
 
+## 0.12.45
+
+### Patch Changes
+
+- a08aa37: chore: add deleteable combobox
+- ee22a82: feat(components): add / update icons to match line icons
+  - @scalar/code-highlight@0.0.11
+
 ## 0.12.44
 
 ### Patch Changes

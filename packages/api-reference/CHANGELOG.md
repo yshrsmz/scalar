@@ -1,5 +1,22 @@
 # @scalar/api-reference
 
+## 1.25.12
+
+### Patch Changes
+
+- Updated dependencies [674922f]
+- Updated dependencies [a08aa37]
+- Updated dependencies [ee22a82]
+- Updated dependencies [9cd23e3]
+- Updated dependencies [121bc7e]
+  - @scalar/openapi-parser@0.8.3
+  - @scalar/components@0.12.45
+  - @scalar/oas-utils@0.2.44
+  - @scalar/themes@0.9.30
+  - @scalar/api-client@2.0.65
+  - @scalar/code-highlight@0.0.11
+  - @scalar/types@0.0.9
+
 ## 1.25.11
 
 ### Patch Changes

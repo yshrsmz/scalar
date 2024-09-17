@@ -1,5 +1,17 @@
 # scalar-api-client
 
+## 0.1.37
+
+### Patch Changes
+
+- 121bc7e: chore: update lint, prettier and format theme
+- Updated dependencies [a08aa37]
+- Updated dependencies [ee22a82]
+- Updated dependencies [121bc7e]
+  - @scalar/components@0.12.45
+  - @scalar/themes@0.9.30
+  - @scalar/api-client@2.0.65
+
 ## 0.1.36
 
 ### Patch Changes
