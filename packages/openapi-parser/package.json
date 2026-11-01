@@ -69,7 +69,7 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "@scalar/openapi-types": "workspace:*",
     "@types/node": "^20.14.10",
-    "glob": "^10.3.10",
+    "glob": "^14.0.2",
     "json-to-ast": "^2.1.0",
     "just-diff": "^6.0.2",
     "rollup": "^4.16.4",
